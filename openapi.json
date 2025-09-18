@@ -14,6 +14,128 @@
     "host": "localhost:8000",
     "basePath": "/v1",
     "paths": {
+        "/admin/stripe/prices": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a list of available Stripe prices for subscriptions and credit packages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "stripe"
+                ],
+                "summary": "List Stripe prices",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status (default: true)",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of prices to return (default: 20, max: 100)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price type filter: recurring or one_time",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_ListPricesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/stripe/products": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a list of available Stripe products with their details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "stripe"
+                ],
+                "summary": "List Stripe products",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status (default: true)",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of products to return (default: 20, max: 100)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product type filter: service or good",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_ListProductsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/agents": {
             "get": {
                 "security": [
@@ -856,6 +978,109 @@
                 }
             }
         },
+        "/billing/payment-methods/attach": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Attach a payment method to a customer and set it as the default for invoice payments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Attach payment method to customer",
+                "parameters": [
+                    {
+                        "description": "Attach payment method request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AttachPaymentMethodRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/payment-methods/validate": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Check if the team's customer has a default payment method for subscription billing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Validate payment method",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_ValidatePaymentMethodResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/billing/portal": {
             "post": {
                 "security": [
@@ -1065,6 +1290,63 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handlers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/topup": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Top up credits - tries direct payment first, falls back to checkout session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Credit topup",
+                "parameters": [
+                    {
+                        "description": "Topup request data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TopupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_TopupResponse"
                         }
                     },
                     "400": {
@@ -2093,6 +2375,21 @@
                 "usage": {}
             }
         },
+        "handlers.AttachPaymentMethodRequest": {
+            "type": "object",
+            "required": [
+                "customer_id",
+                "payment_method_id"
+            ],
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "payment_method_id": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.Balance": {
             "type": "object",
             "properties": {
@@ -2130,12 +2427,6 @@
                 "current_plan": {
                     "type": "object",
                     "additionalProperties": true
-                },
-                "invoices": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.InvoiceResponse"
-                    }
                 },
                 "usage": {
                     "type": "array",
@@ -2263,32 +2554,31 @@
                 }
             }
         },
-        "handlers.InvoiceResponse": {
+        "handlers.ListPricesResponse": {
             "type": "object",
             "properties": {
-                "amount": {
+                "count": {
                     "type": "integer"
                 },
-                "currency": {
-                    "type": "string"
+                "prices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.StripePriceResponse"
+                    }
+                }
+            }
+        },
+        "handlers.ListProductsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
                 },
-                "download_url": {
-                    "type": "string"
-                },
-                "due_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "invoice_url": {
-                    "type": "string"
-                },
-                "paid_at": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.StripeProductResponse"
+                    }
                 }
             }
         },
@@ -2473,6 +2763,34 @@
                 }
             }
         },
+        "handlers.PriceProductDetails": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.PriceRecurringDetails": {
+            "type": "object",
+            "properties": {
+                "interval": {
+                    "type": "string"
+                },
+                "interval_count": {
+                    "type": "integer"
+                },
+                "usage_type": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.RunAgentRequest": {
             "type": "object",
             "properties": {
@@ -2525,6 +2843,22 @@
                 }
             }
         },
+        "handlers.SingleResponse-handlers_ListPricesResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.ListPricesResponse"
+                }
+            }
+        },
+        "handlers.SingleResponse-handlers_ListProductsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.ListProductsResponse"
+                }
+            }
+        },
         "handlers.SingleResponse-handlers_MeResponse": {
             "type": "object",
             "properties": {
@@ -2557,11 +2891,103 @@
                 }
             }
         },
+        "handlers.SingleResponse-handlers_TopupResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.TopupResponse"
+                }
+            }
+        },
         "handlers.SingleResponse-handlers_UserResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/handlers.UserResponse"
+                }
+            }
+        },
+        "handlers.SingleResponse-handlers_ValidatePaymentMethodResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.ValidatePaymentMethodResponse"
+                }
+            }
+        },
+        "handlers.StripePriceResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "product": {
+                    "$ref": "#/definitions/handlers.PriceProductDetails"
+                },
+                "recurring": {
+                    "$ref": "#/definitions/handlers.PriceRecurringDetails"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unit_amount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.StripeProductResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unit_label": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },
@@ -2626,6 +3052,34 @@
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.TopupRequest": {
+            "type": "object",
+            "required": [
+                "price_id"
+            ],
+            "properties": {
+                "price_id": {
+                    "description": "Stripe price ID",
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.TopupResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "success/error message",
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "url": {
+                    "description": "present if checkout session needed",
                     "type": "string"
                 }
             }
@@ -2703,6 +3157,23 @@
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ValidatePaymentMethodResponse": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "has_payment_method": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "payment_method_id": {
                     "type": "string"
                 }
             }
