@@ -59,16 +59,6 @@ definitions:
         type: string
       usage: {}
     type: object
-  handlers.AttachPaymentMethodRequest:
-    properties:
-      customer_id:
-        type: string
-      payment_method_id:
-        type: string
-    required:
-    - customer_id
-    - payment_method_id
-    type: object
   handlers.Balance:
     properties:
       monthly_credits_left:
@@ -153,6 +143,13 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  handlers.CreateSubscriptionRequest:
+    properties:
+      price_id:
+        type: string
+    required:
+    - price_id
     type: object
   handlers.CreateTeamRequest:
     properties:
@@ -292,15 +289,6 @@ definitions:
         example: 10
         type: integer
     type: object
-  handlers.PaymentRequest:
-    properties:
-      amount:
-        type: integer
-      currency:
-        type: string
-      tokens:
-        type: integer
-    type: object
   handlers.PortalRequest:
     properties:
       return_url:
@@ -319,6 +307,10 @@ definitions:
         type: string
       id:
         type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
       name:
         type: string
     type: object
@@ -404,11 +396,6 @@ definitions:
       data:
         $ref: '#/definitions/handlers.UserResponse'
     type: object
-  handlers.SingleResponse-handlers_ValidatePaymentMethodResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.ValidatePaymentMethodResponse'
-    type: object
   handlers.StripePriceResponse:
     properties:
       active:
@@ -457,13 +444,6 @@ definitions:
       updated:
         type: integer
       url:
-        type: string
-    type: object
-  handlers.SubscriptionRequest:
-    properties:
-      plan:
-        type: string
-      price_id:
         type: string
     type: object
   handlers.SuccessResponse:
@@ -546,13 +526,6 @@ definitions:
       tokens:
         type: integer
     type: object
-  handlers.UsageRequest:
-    properties:
-      action:
-        type: string
-      tokens:
-        type: integer
-    type: object
   handlers.UserResponse:
     properties:
       auth0_id:
@@ -568,17 +541,6 @@ definitions:
       status:
         type: string
       updated_at:
-        type: string
-    type: object
-  handlers.ValidatePaymentMethodResponse:
-    properties:
-      customer_id:
-        type: string
-      has_payment_method:
-        type: boolean
-      message:
-        type: string
-      payment_method_id:
         type: string
     type: object
   handlers.WebhookRequest:
@@ -643,20 +605,20 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of available Stripe prices for subscriptions and credit
-        packages
+      description: Get a list of available Stripe prices filtered by category or price
+        type
       parameters:
-      - description: 'Filter by active status (default: true)'
-        in: query
-        name: active
-        type: boolean
-      - description: 'Number of prices to return (default: 20, max: 100)'
+      - description: 'Number of prices to return (default: 100, max: 500)'
         in: query
         name: limit
         type: integer
-      - description: 'Price type filter: recurring or one_time'
+      - description: 'Price type filter: recurring, one_time'
         in: query
         name: type
+        type: string
+      - description: 'Product category filter: topup, subscription'
+        in: query
+        name: category
         type: string
       produces:
       - application/json
@@ -1263,73 +1225,6 @@ paths:
       summary: Get billing overview
       tags:
       - billing
-  /billing/payment-methods/attach:
-    post:
-      consumes:
-      - application/json
-      description: Attach a payment method to a customer and set it as the default
-        for invoice payments
-      parameters:
-      - description: Attach payment method request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.AttachPaymentMethodRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Attach payment method to customer
-      tags:
-      - billing
-  /billing/payment-methods/validate:
-    get:
-      consumes:
-      - application/json
-      description: Check if the team's customer has a default payment method for subscription
-        billing
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_ValidatePaymentMethodResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Validate payment method
-      tags:
-      - billing
   /billing/portal:
     post:
       consumes:
@@ -1378,7 +1273,7 @@ paths:
         name: subscription
         required: true
         schema:
-          $ref: '#/definitions/handlers.SubscriptionRequest'
+          $ref: '#/definitions/handlers.CreateSubscriptionRequest'
       produces:
       - application/json
       responses:
@@ -1401,81 +1296,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Create subscription
-      tags:
-      - billing
-  /billing/subscriptions/{subscription_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Cancel an existing subscription
-      parameters:
-      - description: Subscription ID
-        in: path
-        name: subscription_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Cancel subscription
-      tags:
-      - billing
-  /billing/tokens/purchase:
-    post:
-      consumes:
-      - application/json
-      description: Create a payment session for purchasing tokens
-      parameters:
-      - description: Payment data
-        in: body
-        name: payment
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.PaymentRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create token payment
       tags:
       - billing
   /billing/topup:
@@ -1555,41 +1375,6 @@ paths:
       summary: Get usage history
       tags:
       - billing
-    post:
-      consumes:
-      - application/json
-      description: Record usage for billing purposes
-      parameters:
-      - description: Usage data
-        in: body
-        name: usage
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.UsageRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Record usage
-      tags:
-      - billing
   /health:
     get:
       consumes:
@@ -1646,6 +1431,45 @@ paths:
       summary: List projects
       tags:
       - projects
+  /stripe/products/{product_id}/prices:
+    get:
+      consumes:
+      - application/json
+      description: Get available prices for a specific product
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: 'Filter by active status (default: true)'
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_ListPricesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List prices for a product
+      tags:
+      - stripe
   /stripe/webhook:
     post:
       consumes:
