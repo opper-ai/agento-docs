@@ -14,128 +14,6 @@
     "host": "localhost:8000",
     "basePath": "/v1",
     "paths": {
-        "/admin/stripe/prices": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get a list of available Stripe prices filtered by category or price type",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin",
-                    "stripe"
-                ],
-                "summary": "List Stripe prices",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Number of prices to return (default: 100, max: 500)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Price type filter: recurring, one_time",
-                        "name": "type",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Product category filter: topup, subscription",
-                        "name": "category",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_ListPricesResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/stripe/products": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get a list of available Stripe products with their details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin",
-                    "stripe"
-                ],
-                "summary": "List Stripe products",
-                "parameters": [
-                    {
-                        "type": "boolean",
-                        "description": "Filter by active status (default: true)",
-                        "name": "active",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of products to return (default: 20, max: 100)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Product type filter: service or good",
-                        "name": "type",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_ListProductsResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/agents": {
             "get": {
                 "security": [
@@ -1296,67 +1174,6 @@
                 }
             }
         },
-        "/stripe/products/{product_id}/prices": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get available prices for a specific product",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stripe"
-                ],
-                "summary": "List prices for a product",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Product ID",
-                        "name": "product_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Filter by active status (default: true)",
-                        "name": "active",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_ListPricesResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/stripe/webhook": {
             "post": {
                 "description": "Handle incoming Stripe webhook events",
@@ -2335,34 +2152,6 @@
                 }
             }
         },
-        "handlers.ListPricesResponse": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "prices": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.StripePriceResponse"
-                    }
-                }
-            }
-        },
-        "handlers.ListProductsResponse": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "products": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.StripeProductResponse"
-                    }
-                }
-            }
-        },
         "handlers.MeResponse": {
             "type": "object",
             "properties": {
@@ -2530,40 +2319,6 @@
                 }
             }
         },
-        "handlers.PriceProductDetails": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.PriceRecurringDetails": {
-            "type": "object",
-            "properties": {
-                "interval": {
-                    "type": "string"
-                },
-                "interval_count": {
-                    "type": "integer"
-                },
-                "usage_type": {
-                    "type": "string"
-                }
-            }
-        },
         "handlers.RunAgentRequest": {
             "type": "object",
             "properties": {
@@ -2616,22 +2371,6 @@
                 }
             }
         },
-        "handlers.SingleResponse-handlers_ListPricesResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.ListPricesResponse"
-                }
-            }
-        },
-        "handlers.SingleResponse-handlers_ListProductsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.ListProductsResponse"
-                }
-            }
-        },
         "handlers.SingleResponse-handlers_MeResponse": {
             "type": "object",
             "properties": {
@@ -2677,82 +2416,6 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/handlers.UserResponse"
-                }
-            }
-        },
-        "handlers.StripePriceResponse": {
-            "type": "object",
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "created": {
-                    "type": "integer"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "nickname": {
-                    "type": "string"
-                },
-                "product": {
-                    "$ref": "#/definitions/handlers.PriceProductDetails"
-                },
-                "recurring": {
-                    "$ref": "#/definitions/handlers.PriceRecurringDetails"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unit_amount": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handlers.StripeProductResponse": {
-            "type": "object",
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "created": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unit_label": {
-                    "type": "string"
-                },
-                "updated": {
-                    "type": "integer"
-                },
-                "url": {
-                    "type": "string"
                 }
             }
         },

@@ -174,24 +174,6 @@ definitions:
       error:
         type: string
     type: object
-  handlers.ListPricesResponse:
-    properties:
-      count:
-        type: integer
-      prices:
-        items:
-          $ref: '#/definitions/handlers.StripePriceResponse'
-        type: array
-    type: object
-  handlers.ListProductsResponse:
-    properties:
-      count:
-        type: integer
-      products:
-        items:
-          $ref: '#/definitions/handlers.StripeProductResponse'
-        type: array
-    type: object
   handlers.MeResponse:
     properties:
       auth0_id:
@@ -301,28 +283,6 @@ definitions:
       url:
         type: string
     type: object
-  handlers.PriceProductDetails:
-    properties:
-      description:
-        type: string
-      id:
-        type: string
-      metadata:
-        additionalProperties:
-          type: string
-        type: object
-      name:
-        type: string
-    type: object
-  handlers.PriceRecurringDetails:
-    properties:
-      interval:
-        type: string
-      interval_count:
-        type: integer
-      usage_type:
-        type: string
-    type: object
   handlers.RunAgentRequest:
     properties:
       input:
@@ -356,16 +316,6 @@ definitions:
       data:
         $ref: '#/definitions/handlers.CheckoutResponse'
     type: object
-  handlers.SingleResponse-handlers_ListPricesResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.ListPricesResponse'
-    type: object
-  handlers.SingleResponse-handlers_ListProductsResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.ListProductsResponse'
-    type: object
   handlers.SingleResponse-handlers_MeResponse:
     properties:
       data:
@@ -395,56 +345,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/handlers.UserResponse'
-    type: object
-  handlers.StripePriceResponse:
-    properties:
-      active:
-        type: boolean
-      created:
-        type: integer
-      currency:
-        type: string
-      id:
-        type: string
-      nickname:
-        type: string
-      product:
-        $ref: '#/definitions/handlers.PriceProductDetails'
-      recurring:
-        $ref: '#/definitions/handlers.PriceRecurringDetails'
-      type:
-        type: string
-      unit_amount:
-        type: integer
-    type: object
-  handlers.StripeProductResponse:
-    properties:
-      active:
-        type: boolean
-      created:
-        type: integer
-      description:
-        type: string
-      id:
-        type: string
-      images:
-        items:
-          type: string
-        type: array
-      metadata:
-        additionalProperties:
-          type: string
-        type: object
-      name:
-        type: string
-      type:
-        type: string
-      unit_label:
-        type: string
-      updated:
-        type: integer
-      url:
-        type: string
     type: object
   handlers.SuccessResponse:
     properties:
@@ -601,85 +501,6 @@ info:
   title: Agento API
   version: "1.0"
 paths:
-  /admin/stripe/prices:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of available Stripe prices filtered by category or price
-        type
-      parameters:
-      - description: 'Number of prices to return (default: 100, max: 500)'
-        in: query
-        name: limit
-        type: integer
-      - description: 'Price type filter: recurring, one_time'
-        in: query
-        name: type
-        type: string
-      - description: 'Product category filter: topup, subscription'
-        in: query
-        name: category
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_ListPricesResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List Stripe prices
-      tags:
-      - admin
-      - stripe
-  /admin/stripe/products:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of available Stripe products with their details
-      parameters:
-      - description: 'Filter by active status (default: true)'
-        in: query
-        name: active
-        type: boolean
-      - description: 'Number of products to return (default: 20, max: 100)'
-        in: query
-        name: limit
-        type: integer
-      - description: 'Product type filter: service or good'
-        in: query
-        name: type
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_ListProductsResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List Stripe products
-      tags:
-      - admin
-      - stripe
   /agents:
     get:
       consumes:
@@ -1431,45 +1252,6 @@ paths:
       summary: List projects
       tags:
       - projects
-  /stripe/products/{product_id}/prices:
-    get:
-      consumes:
-      - application/json
-      description: Get available prices for a specific product
-      parameters:
-      - description: Product ID
-        in: path
-        name: product_id
-        required: true
-        type: string
-      - description: 'Filter by active status (default: true)'
-        in: query
-        name: active
-        type: boolean
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_ListPricesResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List prices for a product
-      tags:
-      - stripe
   /stripe/webhook:
     post:
       consumes:
