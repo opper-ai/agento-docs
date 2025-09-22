@@ -1055,29 +1055,6 @@
                 }
             }
         },
-        "/health": {
-            "get": {
-                "description": "Check if the API is running",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "health"
-                ],
-                "summary": "Health check",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/routes.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/logs/lobby": {
             "get": {
                 "security": [
@@ -1244,52 +1221,6 @@
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stripe/webhook": {
-            "post": {
-                "description": "Handle incoming Stripe webhook events",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "billing"
-                ],
-                "summary": "Handle Stripe webhook",
-                "parameters": [
-                    {
-                        "description": "Stripe webhook payload",
-                        "name": "payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.WebhookRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -1825,23 +1756,6 @@
                     "type": "string"
                 },
                 "user_preferences": {}
-            }
-        },
-        "handlers.WebhookRequest": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "routes.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string"
-                }
             }
         }
     },

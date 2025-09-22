@@ -276,17 +276,6 @@ definitions:
         type: string
       user_preferences: {}
     type: object
-  handlers.WebhookRequest:
-    properties:
-      data: {}
-      type:
-        type: string
-    type: object
-  routes.HealthResponse:
-    properties:
-      status:
-        type: string
-    type: object
 host: localhost:8000
 info:
   contact:
@@ -976,21 +965,6 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
-  /health:
-    get:
-      consumes:
-      - application/json
-      description: Check if the API is running
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/routes.HealthResponse'
-      summary: Health check
-      tags:
-      - health
   /logs/lobby:
     delete:
       consumes:
@@ -1108,36 +1082,6 @@ paths:
       summary: Create lobby chat log entry
       tags:
       - chat
-  /stripe/webhook:
-    post:
-      consumes:
-      - application/json
-      description: Handle incoming Stripe webhook events
-      parameters:
-      - description: Stripe webhook payload
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.WebhookRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      summary: Handle Stripe webhook
-      tags:
-      - billing
   /users/me:
     get:
       consumes:
