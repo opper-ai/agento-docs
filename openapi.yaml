@@ -1,15 +1,5 @@
 basePath: /v1
 definitions:
-  handlers.AddTeamMemberRequest:
-    properties:
-      role:
-        type: string
-      user_id:
-        type: integer
-    required:
-    - role
-    - user_id
-    type: object
   handlers.AgentBuilderLogResponse:
     properties:
       agent_id:
@@ -105,16 +95,6 @@ definitions:
       stripe_subscription_id:
         type: string
     type: object
-  handlers.BillingOverviewData:
-    properties:
-      current_plan:
-        additionalProperties: true
-        type: object
-      usage:
-        items:
-          $ref: '#/definitions/handlers.Usage'
-        type: array
-    type: object
   handlers.BuildAgentRequest:
     properties:
       current_prompt:
@@ -131,33 +111,22 @@ definitions:
       improved_prompt:
         type: string
     type: object
-  handlers.CheckoutRequest:
+  handlers.ChatStreamRequest:
     properties:
-      amount:
-        description: required for credit_topup (in cents)
-        type: integer
-      cancel_url:
+      agentId:
         type: string
-      credits:
-        description: required for credit_topup
-        type: integer
-      price_id:
-        description: required for upgrade_to_pro
+      conversationId:
         type: string
-      success_url:
+      creatingAgent:
+        type: boolean
+      hasAgents:
+        type: boolean
+      message:
         type: string
-      type:
-        description: '"upgrade_to_pro" or "credit_topup"'
+      view:
         type: string
     required:
-    - cancel_url
-    - success_url
-    - type
-    type: object
-  handlers.CheckoutResponse:
-    properties:
-      url:
-        type: string
+    - message
     type: object
   handlers.CreateAgentBuilderLogRequest:
     properties:
@@ -180,24 +149,6 @@ definitions:
       instructions:
         type: string
       name:
-        type: string
-    required:
-    - name
-    type: object
-  handlers.CreateSubscriptionRequest:
-    properties:
-      price_id:
-        type: string
-    required:
-    - price_id
-    type: object
-  handlers.CreateTeamRequest:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-      stripe_customer_id:
         type: string
     required:
     - name
@@ -260,51 +211,6 @@ definitions:
       meta:
         $ref: '#/definitions/handlers.PaginationMeta'
     type: object
-  handlers.Paginated-handlers_TeamMemberResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.TeamMemberResponse'
-        type: array
-      meta:
-        $ref: '#/definitions/handlers.PaginationMeta'
-    type: object
-  handlers.Paginated-handlers_TeamResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.TeamResponse'
-        type: array
-      meta:
-        $ref: '#/definitions/handlers.PaginationMeta'
-    type: object
-  handlers.Paginated-handlers_Usage:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.Usage'
-        type: array
-      meta:
-        $ref: '#/definitions/handlers.PaginationMeta'
-    type: object
-  handlers.Paginated-handlers_UserResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.UserResponse'
-        type: array
-      meta:
-        $ref: '#/definitions/handlers.PaginationMeta'
-    type: object
-  handlers.Paginated-models_ProjectWithCreatorResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/models.ProjectWithCreatorResponse'
-        type: array
-      meta:
-        $ref: '#/definitions/handlers.PaginationMeta'
-    type: object
   handlers.PaginationMeta:
     properties:
       page:
@@ -319,18 +225,6 @@ definitions:
       total_pages:
         example: 10
         type: integer
-    type: object
-  handlers.PortalRequest:
-    properties:
-      return_url:
-        type: string
-    required:
-    - return_url
-    type: object
-  handlers.PortalResponse:
-    properties:
-      url:
-        type: string
     type: object
   handlers.RunAgentRequest:
     properties:
@@ -355,50 +249,15 @@ definitions:
       data:
         $ref: '#/definitions/handlers.AgentRunResponse'
     type: object
-  handlers.SingleResponse-handlers_BillingOverviewData:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.BillingOverviewData'
-    type: object
   handlers.SingleResponse-handlers_BuildAgentResponse:
     properties:
       data:
         $ref: '#/definitions/handlers.BuildAgentResponse'
     type: object
-  handlers.SingleResponse-handlers_CheckoutResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.CheckoutResponse'
-    type: object
   handlers.SingleResponse-handlers_MeResponse:
     properties:
       data:
         $ref: '#/definitions/handlers.MeResponse'
-    type: object
-  handlers.SingleResponse-handlers_PortalResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.PortalResponse'
-    type: object
-  handlers.SingleResponse-handlers_TeamMemberResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.TeamMemberResponse'
-    type: object
-  handlers.SingleResponse-handlers_TeamResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.TeamResponse'
-    type: object
-  handlers.SingleResponse-handlers_TopupResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.TopupResponse'
-    type: object
-  handlers.SingleResponse-handlers_UserResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.UserResponse'
     type: object
   handlers.SuccessResponse:
     properties:
@@ -406,53 +265,6 @@ definitions:
         type: string
       success:
         type: boolean
-    type: object
-  handlers.TeamMemberResponse:
-    properties:
-      email:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      role:
-        type: string
-      team_id:
-        type: integer
-      user_id:
-        type: integer
-    type: object
-  handlers.TeamResponse:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  handlers.TopupRequest:
-    properties:
-      price_id:
-        description: Stripe price ID
-        type: string
-    required:
-    - price_id
-    type: object
-  handlers.TopupResponse:
-    properties:
-      message:
-        description: success/error message
-        type: string
-      success:
-        type: boolean
-      url:
-        description: present if checkout session needed
-        type: string
     type: object
   handlers.UpdateAgentRequest:
     properties:
@@ -464,79 +276,10 @@ definitions:
         type: string
       user_preferences: {}
     type: object
-  handlers.UpdateTeamRequest:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-      stripe_customer_id:
-        type: string
-    type: object
-  handlers.Usage:
-    properties:
-      date:
-        type: string
-      tokens:
-        type: integer
-    type: object
-  handlers.UserResponse:
-    properties:
-      auth0_id:
-        type: string
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      status:
-        type: string
-      updated_at:
-        type: string
-    type: object
   handlers.WebhookRequest:
     properties:
       data: {}
       type:
-        type: string
-    type: object
-  models.ProjectWithCreatorResponse:
-    properties:
-      created_at:
-        type: string
-      created_by_display_name:
-        type: string
-      created_by_email:
-        type: string
-      created_by_id:
-        type: integer
-      created_by_uuid:
-        type: string
-      deleted_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      status:
-        type: string
-      team:
-        $ref: '#/definitions/models.TeamBasic'
-      team_id:
-        type: integer
-      updated_at:
-        type: string
-    type: object
-  models.TeamBasic:
-    properties:
-      id:
-        type: string
-      name:
         type: string
     type: object
   routes.HealthResponse:
@@ -1183,26 +926,25 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
-  /billing/checkout:
+  /chat/stream:
     post:
       consumes:
       - application/json
-      description: Create a Stripe checkout session for upgrading to pro or buying
-        credits
+      description: Stream conversational chat through an agent with real-time streaming
       parameters:
-      - description: Checkout request data
+      - description: Chat stream request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.CheckoutRequest'
+          $ref: '#/definitions/handlers.ChatStreamRequest'
       produces:
-      - application/json
+      - text/plain
       responses:
         "200":
-          description: OK
+          description: Stream of chat responses
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_CheckoutResponse'
+            type: string
         "400":
           description: Bad Request
           schema:
@@ -1211,29 +953,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create checkout session
-      tags:
-      - billing
-  /billing/overview:
-    get:
-      consumes:
-      - application/json
-      description: Get billing overview and usage information for the current team
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_BillingOverviewData'
-        "401":
-          description: Unauthorized
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "404":
@@ -1244,161 +965,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get billing overview
+      summary: Stream chat endpoint
       tags:
-      - billing
-  /billing/portal:
-    post:
-      consumes:
-      - application/json
-      description: Create a Stripe customer portal session for managing subscription
-        and payment methods
-      parameters:
-      - description: Portal request data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.PortalRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_PortalResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create billing portal
-      tags:
-      - billing
-  /billing/subscriptions:
-    post:
-      consumes:
-      - application/json
-      description: Create a new billing subscription
-      parameters:
-      - description: Subscription data
-        in: body
-        name: subscription
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateSubscriptionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create subscription
-      tags:
-      - billing
-  /billing/topup:
-    post:
-      consumes:
-      - application/json
-      description: Top up credits - tries direct payment first, falls back to checkout
-        session
-      parameters:
-      - description: Topup request data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.TopupRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_TopupResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Credit topup
-      tags:
-      - billing
-  /billing/usage:
-    get:
-      consumes:
-      - application/json
-      description: Get usage history for the current team with pagination support
-      parameters:
-      - default: 1
-        description: 'Page number (default: 1)'
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: 'Number of items per page (default: 10, max: 100)'
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.Paginated-handlers_Usage'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get usage history
-      tags:
-      - billing
+      - chat
   /health:
     get:
       consumes:
@@ -1531,47 +1100,6 @@ paths:
       summary: Create lobby chat log entry
       tags:
       - chat
-  /projects:
-    get:
-      consumes:
-      - application/json
-      description: Get all projects for the currently authenticated user's team with
-        pagination support
-      parameters:
-      - default: 1
-        description: 'Page number (default: 1)'
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: 'Number of items per page (default: 10, max: 100)'
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.Paginated-models_ProjectWithCreatorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List projects
-      tags:
-      - projects
   /stripe/webhook:
     post:
       consumes:
@@ -1602,372 +1130,6 @@ paths:
       summary: Handle Stripe webhook
       tags:
       - billing
-  /teams:
-    get:
-      consumes:
-      - application/json
-      description: Get all teams for the currently authenticated user with pagination
-        support
-      parameters:
-      - default: 1
-        description: 'Page number (default: 1)'
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: 'Number of items per page (default: 10, max: 100)'
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.Paginated-handlers_TeamResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List teams
-      tags:
-      - teams
-    post:
-      consumes:
-      - application/json
-      description: Create a new team for the current user
-      parameters:
-      - description: Team creation data
-        in: body
-        name: team
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateTeamRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_TeamResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create team
-      tags:
-      - teams
-  /teams/{team_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a team by ID
-      parameters:
-      - description: Team UUID
-        in: path
-        name: team_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_TeamResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Delete team
-      tags:
-      - teams
-    get:
-      consumes:
-      - application/json
-      description: Get a specific team by ID
-      parameters:
-      - description: Team UUID
-        in: path
-        name: team_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_TeamResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get team
-      tags:
-      - teams
-    put:
-      consumes:
-      - application/json
-      description: Update an existing team by ID
-      parameters:
-      - description: Team UUID
-        in: path
-        name: team_id
-        required: true
-        type: string
-      - description: Team update data
-        in: body
-        name: team
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.UpdateTeamRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_TeamResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Update team
-      tags:
-      - teams
-  /teams/{team_id}/members:
-    get:
-      consumes:
-      - application/json
-      description: Get all members of a specific team with pagination support
-      parameters:
-      - description: Team ID
-        in: path
-        name: team_id
-        required: true
-        type: integer
-      - default: 1
-        description: 'Page number (default: 1)'
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: 'Number of items per page (default: 10, max: 100)'
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.Paginated-handlers_TeamMemberResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List team members
-      tags:
-      - team-members
-    post:
-      consumes:
-      - application/json
-      description: Add a new member to a team
-      parameters:
-      - description: Team ID
-        in: path
-        name: team_id
-        required: true
-        type: integer
-      - description: Team member data
-        in: body
-        name: member
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.AddTeamMemberRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_TeamMemberResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Add team member
-      tags:
-      - team-members
-  /teams/{team_id}/members/{user_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Remove a member from a team
-      parameters:
-      - description: Team ID
-        in: path
-        name: team_id
-        required: true
-        type: integer
-      - description: User ID
-        in: path
-        name: user_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.DeleteResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Remove team member
-      tags:
-      - team-members
-  /users:
-    get:
-      consumes:
-      - application/json
-      description: Get all users with pagination support
-      parameters:
-      - default: 1
-        description: 'Page number (default: 1)'
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: 'Number of items per page (default: 10, max: 100)'
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.Paginated-handlers_UserResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List users
-      tags:
-      - users
   /users/me:
     get:
       consumes:
@@ -2008,14 +1170,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/handlers.UserResponse'
+          $ref: '#/definitions/handlers.MeResponse'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_UserResponse'
+            $ref: '#/definitions/handlers.SingleResponse-handlers_MeResponse'
         "400":
           description: Bad Request
           schema:
