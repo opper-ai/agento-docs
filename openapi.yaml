@@ -548,6 +548,56 @@ paths:
       summary: Build agent prompt
       tags:
       - agents
+  /agents/{agent_id}/chat:
+    post:
+      consumes:
+      - application/json
+      description: Streams conversational updates, agent refinements, and run output
+        via server-sent events
+      parameters:
+      - description: Agent ID or 'lobby' for general chat
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Chat stream payload
+        in: body
+        name: chat
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ChatStreamRequest'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: Streaming response
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Stream chat with agent builder
+      tags:
+      - chat
   /agents/{agent_id}/logs:
     delete:
       consumes:
@@ -926,48 +976,6 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
-  /chat/stream:
-    post:
-      consumes:
-      - application/json
-      description: Stream conversational chat through an agent with real-time streaming
-      parameters:
-      - description: Chat stream request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.ChatStreamRequest'
-      produces:
-      - text/plain
-      responses:
-        "200":
-          description: Stream of chat responses
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      summary: Stream chat endpoint
-      tags:
-      - chat
   /health:
     get:
       consumes:
