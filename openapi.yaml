@@ -10,6 +10,32 @@ definitions:
     - role
     - user_id
     type: object
+  handlers.AgentBuilderLogResponse:
+    properties:
+      agent_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      metadata: {}
+      parent_log_id:
+        type: string
+      project_id:
+        type: integer
+      team_id:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_email:
+        type: string
+      user_id:
+        type: integer
+    type: object
   handlers.AgentResponse:
     properties:
       created_at:
@@ -133,6 +159,20 @@ definitions:
       url:
         type: string
     type: object
+  handlers.CreateAgentBuilderLogRequest:
+    properties:
+      content:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      parent_log_id:
+        type: string
+      type:
+        type: string
+    required:
+    - type
+    type: object
   handlers.CreateAgentRequest:
     properties:
       description:
@@ -192,6 +232,15 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  handlers.Paginated-handlers_AgentBuilderLogResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.AgentBuilderLogResponse'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
     type: object
   handlers.Paginated-handlers_AgentResponse:
     properties:
@@ -290,6 +339,11 @@ definitions:
       metadata: {}
       model:
         type: string
+    type: object
+  handlers.SingleResponse-handlers_AgentBuilderLogResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.AgentBuilderLogResponse'
     type: object
   handlers.SingleResponse-handlers_AgentResponse:
     properties:
@@ -751,6 +805,155 @@ paths:
       summary: Build agent prompt
       tags:
       - agents
+  /agents/{agent_id}/logs:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all chat transcript entries for the selected agent
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Clear agent chat logs
+      tags:
+      - chat
+    get:
+      consumes:
+      - application/json
+      description: Retrieve chat transcript entries for the selected agent with pagination
+        support
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - default: 1
+        description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 'Page size (default: 20, max: 100)'
+        in: query
+        name: page_size
+        type: integer
+      - description: Alias for page_size to support legacy clients
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-handlers_AgentBuilderLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List agent chat logs
+      tags:
+      - chat
+    post:
+      consumes:
+      - application/json
+      description: Append a new message, tool event, or metadata record to the selected
+        agent's chat transcript
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Chat log payload
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateAgentBuilderLogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentBuilderLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create agent chat log entry
+      tags:
+      - chat
   /agents/{agent_id}/runs:
     get:
       consumes:
@@ -1211,6 +1414,123 @@ paths:
       summary: Health check
       tags:
       - health
+  /logs/lobby:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all lobby chat transcript entries for the current team
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Clear lobby chat logs
+      tags:
+      - chat
+    get:
+      consumes:
+      - application/json
+      description: Retrieve lobby chat transcript entries for the current team with
+        pagination support
+      parameters:
+      - default: 1
+        description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 'Page size (default: 20, max: 100)'
+        in: query
+        name: page_size
+        type: integer
+      - description: Alias for page_size to support legacy clients
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-handlers_AgentBuilderLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List lobby chat logs
+      tags:
+      - chat
+    post:
+      consumes:
+      - application/json
+      description: Append a new lobby chat message, tool event, or metadata record
+        for the current team
+      parameters:
+      - description: Chat log payload
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateAgentBuilderLogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentBuilderLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create lobby chat log entry
+      tags:
+      - chat
   /projects:
     get:
       consumes:
