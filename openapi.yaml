@@ -153,6 +153,42 @@ definitions:
     required:
     - name
     type: object
+  handlers.CreateUserMcpServerRequest:
+    properties:
+      auth:
+        additionalProperties: {}
+        type: object
+      category:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      global_server_id:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      options:
+        additionalProperties: {}
+        type: object
+      server_id:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      transport:
+        type: string
+      url:
+        type: string
+    required:
+    - name
+    - server_id
+    - url
+    type: object
   handlers.DeleteResponse:
     properties:
       deleted:
@@ -163,6 +199,46 @@ definitions:
   handlers.ErrorResponse:
     properties:
       error:
+        type: string
+    type: object
+  handlers.McpServerResponse:
+    properties:
+      auth:
+        additionalProperties: {}
+        type: object
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: string
+      linked_global_id:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      options:
+        additionalProperties: {}
+        type: object
+      server_id:
+        type: string
+      source:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      transport:
+        type: string
+      updated_at:
+        type: string
+      url:
         type: string
     type: object
   handlers.MeResponse:
@@ -234,6 +310,13 @@ definitions:
       model:
         type: string
     type: object
+  handlers.SingleResponse-array_handlers_McpServerResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.McpServerResponse'
+        type: array
+    type: object
   handlers.SingleResponse-handlers_AgentBuilderLogResponse:
     properties:
       data:
@@ -254,10 +337,20 @@ definitions:
       data:
         $ref: '#/definitions/handlers.BuildAgentResponse'
     type: object
+  handlers.SingleResponse-handlers_McpServerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.McpServerResponse'
+    type: object
   handlers.SingleResponse-handlers_MeResponse:
     properties:
       data:
         $ref: '#/definitions/handlers.MeResponse'
+    type: object
+  handlers.SingleResponse-handlers_composioAppsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.composioAppsResponse'
     type: object
   handlers.SuccessResponse:
     properties:
@@ -275,6 +368,64 @@ definitions:
       name:
         type: string
       user_preferences: {}
+    type: object
+  handlers.UpdateUserMcpServerRequest:
+    properties:
+      auth:
+        additionalProperties: {}
+        type: object
+      category:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      metadata:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      options:
+        additionalProperties: {}
+        type: object
+      tags:
+        items:
+          type: string
+        type: array
+      transport:
+        type: string
+      url:
+        type: string
+    type: object
+  handlers.composioApp:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      displayName:
+        type: string
+      enabled:
+        type: boolean
+      key:
+        type: string
+      logo:
+        type: string
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  handlers.composioAppsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/handlers.composioApp'
+        type: array
     type: object
 host: localhost:8000
 info:
@@ -1082,6 +1233,304 @@ paths:
       summary: Create lobby chat log entry
       tags:
       - chat
+  /mcp/servers:
+    get:
+      description: Return all MCP servers visible to the authenticated user, including
+        personal overrides and global catalog entries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_handlers_McpServerResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List MCP servers for current user
+      tags:
+      - mcp
+    post:
+      consumes:
+      - application/json
+      description: Create a user-specific MCP server configuration
+      parameters:
+      - description: MCP server request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateUserMcpServerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create MCP server
+      tags:
+      - mcp
+  /mcp/servers/{server_id}:
+    delete:
+      description: Soft delete a user-specific MCP server configuration by UUID
+      parameters:
+      - description: MCP server UUID
+        in: path
+        name: server_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete MCP server
+      tags:
+      - mcp
+    get:
+      description: Fetch an MCP server configuration by UUID, checking user-defined
+        entries first then global entries
+      parameters:
+      - description: MCP server UUID
+        in: path
+        name: server_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get MCP server
+      tags:
+      - mcp
+    patch:
+      consumes:
+      - application/json
+      description: Update a user-specific MCP server configuration by UUID
+      parameters:
+      - description: MCP server UUID
+        in: path
+        name: server_id
+        required: true
+        type: string
+      - description: MCP server update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserMcpServerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update MCP server
+      tags:
+      - mcp
+    put:
+      consumes:
+      - application/json
+      description: Update a user-specific MCP server configuration by UUID
+      parameters:
+      - description: MCP server UUID
+        in: path
+        name: server_id
+        required: true
+        type: string
+      - description: MCP server update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserMcpServerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update MCP server
+      tags:
+      - mcp
+  /mcp/servers/{server_id}/apps:
+    get:
+      description: Retrieve the list of apps/tools exposed by the specified MCP server
+        (currently proxies Composio)
+      parameters:
+      - description: MCP server identifier
+        in: path
+        name: server_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_composioAppsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List MCP server apps
+      tags:
+      - mcp
+  /mcp/servers/catalog:
+    get:
+      description: Return MCP servers that were provisioned globally via configuration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_handlers_McpServerResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List global MCP servers
+      tags:
+      - mcp
   /users/me:
     get:
       consumes:
