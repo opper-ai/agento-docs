@@ -1294,7 +1294,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateUserMcpServerRequest"
+                            "$ref": "#/definitions/handlers.CreateTeamMcpServerRequest"
                         }
                     }
                 ],
@@ -1463,7 +1463,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateUserMcpServerRequest"
+                            "$ref": "#/definitions/handlers.UpdateTeamMcpServerRequest"
                         }
                     }
                 ],
@@ -1593,7 +1593,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateUserMcpServerRequest"
+                            "$ref": "#/definitions/handlers.UpdateTeamMcpServerRequest"
                         }
                     }
                 ],
@@ -2030,7 +2030,7 @@
                 }
             }
         },
-        "handlers.CreateUserMcpServerRequest": {
+        "handlers.CreateTeamMcpServerRequest": {
             "type": "object",
             "required": [
                 "name",
@@ -2357,7 +2357,7 @@
                 "user_preferences": {}
             }
         },
-        "handlers.UpdateUserMcpServerRequest": {
+        "handlers.UpdateTeamMcpServerRequest": {
             "type": "object",
             "properties": {
                 "auth": {

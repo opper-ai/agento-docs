@@ -153,7 +153,7 @@ definitions:
     required:
     - name
     type: object
-  handlers.CreateUserMcpServerRequest:
+  handlers.CreateTeamMcpServerRequest:
     properties:
       auth:
         additionalProperties: {}
@@ -369,7 +369,7 @@ definitions:
         type: string
       user_preferences: {}
     type: object
-  handlers.UpdateUserMcpServerRequest:
+  handlers.UpdateTeamMcpServerRequest:
     properties:
       auth:
         additionalProperties: {}
@@ -1267,7 +1267,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateUserMcpServerRequest'
+          $ref: '#/definitions/handlers.CreateTeamMcpServerRequest'
       produces:
       - application/json
       responses:
@@ -1389,7 +1389,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/handlers.UpdateUserMcpServerRequest'
+          $ref: '#/definitions/handlers.UpdateTeamMcpServerRequest'
       produces:
       - application/json
       responses:
@@ -1437,7 +1437,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/handlers.UpdateUserMcpServerRequest'
+          $ref: '#/definitions/handlers.UpdateTeamMcpServerRequest'
       produces:
       - application/json
       responses:
