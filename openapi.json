@@ -1956,42 +1956,86 @@
                 }
             }
         },
+        "handlers.MessagePart": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/handlers.MessagePartAction"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "toolCall": {
+                    "$ref": "#/definitions/handlers.MessagePartToolCall"
+                },
+                "toolResult": {
+                    "$ref": "#/definitions/handlers.MessagePartToolResult"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.MessagePartAction": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.MessagePartToolCall": {
+            "type": "object",
+            "properties": {
+                "args": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.MessagePartToolResult": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "result": {}
+            }
+        },
         "handlers.MessageResponse": {
             "type": "object",
             "properties": {
-                "agent_id": {
-                    "type": "string"
-                },
                 "content": {
                     "type": "string"
                 },
-                "created_at": {
+                "conversationId": {
+                    "type": "string"
+                },
+                "createdAt": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "metadata": {},
-                "parent_log_id": {
+                "parts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.MessagePart"
+                    }
+                },
+                "role": {
+                    "description": "\"user\" or \"assistant\" or \"system\"",
                     "type": "string"
                 },
-                "project_id": {
-                    "type": "integer"
-                },
-                "team_id": {
-                    "type": "integer"
-                },
-                "type": {
+                "timestamp": {
                     "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_email": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },

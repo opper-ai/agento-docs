@@ -224,31 +224,60 @@ definitions:
       updated_at:
         type: string
     type: object
+  handlers.MessagePart:
+    properties:
+      action:
+        $ref: '#/definitions/handlers.MessagePartAction'
+      text:
+        type: string
+      toolCall:
+        $ref: '#/definitions/handlers.MessagePartToolCall'
+      toolResult:
+        $ref: '#/definitions/handlers.MessagePartToolResult'
+      type:
+        type: string
+    type: object
+  handlers.MessagePartAction:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
+      type:
+        type: string
+    type: object
+  handlers.MessagePartToolCall:
+    properties:
+      args:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+    type: object
+  handlers.MessagePartToolResult:
+    properties:
+      error:
+        type: string
+      result: {}
+    type: object
   handlers.MessageResponse:
     properties:
-      agent_id:
-        type: string
       content:
         type: string
-      created_at:
+      conversationId:
+        type: string
+      createdAt:
         type: string
       id:
         type: string
-      metadata: {}
-      parent_log_id:
+      parts:
+        items:
+          $ref: '#/definitions/handlers.MessagePart'
+        type: array
+      role:
+        description: '"user" or "assistant" or "system"'
         type: string
-      project_id:
-        type: integer
-      team_id:
-        type: integer
-      type:
+      timestamp:
         type: string
-      updated_at:
-        type: string
-      user_email:
-        type: string
-      user_id:
-        type: integer
     type: object
   handlers.Paginated-handlers_AgentResponse:
     properties:
