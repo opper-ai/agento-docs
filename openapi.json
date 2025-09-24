@@ -408,7 +408,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Streams conversational updates, agent refinements, and run output via server-sent events",
+                "description": "Streams conversational updates and chat responses via server-sent events. Only requires a message parameter.",
                 "consumes": [
                     "application/json"
                 ],
@@ -422,13 +422,13 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Agent ID or 'lobby' for general chat",
+                        "description": "Agent ID",
                         "name": "agent_id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Chat stream payload",
+                        "description": "Chat stream payload containing only the message",
                         "name": "chat",
                         "in": "body",
                         "required": true,
@@ -477,14 +477,14 @@
                 }
             }
         },
-        "/agents/{agent_id}/logs": {
+        "/agents/{agent_id}/messages": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retrieve chat transcript entries for the selected agent with pagination support",
+                "description": "Retrieve chat message entries for the selected agent with pagination support",
                 "consumes": [
                     "application/json"
                 ],
@@ -494,7 +494,7 @@
                 "tags": [
                     "chat"
                 ],
-                "summary": "List agent chat logs",
+                "summary": "List agent chat messages",
                 "parameters": [
                     {
                         "type": "string",
@@ -528,7 +528,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Paginated-handlers_AgentBuilderLogResponse"
+                            "$ref": "#/definitions/handlers.Paginated-handlers_MessageResponse"
                         }
                     },
                     "400": {
@@ -579,7 +579,7 @@
                 "tags": [
                     "chat"
                 ],
-                "summary": "Create agent chat log entry",
+                "summary": "Create agent chat message entry",
                 "parameters": [
                     {
                         "type": "string",
@@ -589,12 +589,12 @@
                         "required": true
                     },
                     {
-                        "description": "Chat log payload",
-                        "name": "log",
+                        "description": "Chat message payload",
+                        "name": "message",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateAgentBuilderLogRequest"
+                            "$ref": "#/definitions/handlers.CreateMessageRequest"
                         }
                     }
                 ],
@@ -602,7 +602,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_AgentBuilderLogResponse"
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_MessageResponse"
                         }
                     },
                     "400": {
@@ -643,7 +643,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete all chat transcript entries for the selected agent",
+                "description": "Delete all chat message entries for the selected agent",
                 "consumes": [
                     "application/json"
                 ],
@@ -653,7 +653,7 @@
                 "tags": [
                     "chat"
                 ],
-                "summary": "Clear agent chat logs",
+                "summary": "Clear agent chat messages",
                 "parameters": [
                     {
                         "type": "string",
@@ -1032,185 +1032,6 @@
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/logs/lobby": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve lobby chat transcript entries for the current team with pagination support",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "List lobby chat logs",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 20,
-                        "description": "Page size (default: 20, max: 100)",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Alias for page_size to support legacy clients",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Paginated-handlers_AgentBuilderLogResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Append a new lobby chat message, tool event, or metadata record for the current team",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "Create lobby chat log entry",
-                "parameters": [
-                    {
-                        "description": "Chat log payload",
-                        "name": "log",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreateAgentBuilderLogRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_AgentBuilderLogResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Delete all lobby chat transcript entries for the current team",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "Clear lobby chat logs",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SuccessResponse"
                         }
                     },
                     "401": {
@@ -1798,45 +1619,6 @@
         }
     },
     "definitions": {
-        "handlers.AgentBuilderLogResponse": {
-            "type": "object",
-            "properties": {
-                "agent_id": {
-                    "type": "string"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "metadata": {},
-                "parent_log_id": {
-                    "type": "string"
-                },
-                "project_id": {
-                    "type": "integer"
-                },
-                "team_id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_email": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "handlers.AgentResponse": {
             "type": "object",
             "properties": {
@@ -1972,43 +1754,7 @@
                 "message"
             ],
             "properties": {
-                "agentId": {
-                    "type": "string"
-                },
-                "conversationId": {
-                    "type": "string"
-                },
-                "creatingAgent": {
-                    "type": "boolean"
-                },
-                "hasAgents": {
-                    "type": "boolean"
-                },
                 "message": {
-                    "type": "string"
-                },
-                "view": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.CreateAgentBuilderLogRequest": {
-            "type": "object",
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "parent_log_id": {
-                    "type": "string"
-                },
-                "type": {
                     "type": "string"
                 }
             }
@@ -2026,6 +1772,27 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.CreateMessageRequest": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "parent_log_id": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -2189,17 +1956,42 @@
                 }
             }
         },
-        "handlers.Paginated-handlers_AgentBuilderLogResponse": {
+        "handlers.MessageResponse": {
             "type": "object",
             "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.AgentBuilderLogResponse"
-                    }
+                "agent_id": {
+                    "type": "string"
                 },
-                "meta": {
-                    "$ref": "#/definitions/handlers.PaginationMeta"
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "metadata": {},
+                "parent_log_id": {
+                    "type": "string"
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "team_id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_email": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2224,6 +2016,20 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/handlers.AgentRunResponse"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/handlers.PaginationMeta"
+                }
+            }
+        },
+        "handlers.Paginated-handlers_MessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.MessageResponse"
                     }
                 },
                 "meta": {
@@ -2275,14 +2081,6 @@
                 }
             }
         },
-        "handlers.SingleResponse-handlers_AgentBuilderLogResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.AgentBuilderLogResponse"
-                }
-            }
-        },
         "handlers.SingleResponse-handlers_AgentResponse": {
             "type": "object",
             "properties": {
@@ -2320,6 +2118,14 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/handlers.MeResponse"
+                }
+            }
+        },
+        "handlers.SingleResponse-handlers_MessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.MessageResponse"
                 }
             }
         },
@@ -2410,7 +2216,7 @@
                 "description": {
                     "type": "string"
                 },
-                "displayName": {
+                "display_name": {
                     "type": "string"
                 },
                 "enabled": {

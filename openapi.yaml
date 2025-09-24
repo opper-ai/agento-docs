@@ -1,31 +1,5 @@
 basePath: /v1
 definitions:
-  handlers.AgentBuilderLogResponse:
-    properties:
-      agent_id:
-        type: string
-      content:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      metadata: {}
-      parent_log_id:
-        type: string
-      project_id:
-        type: integer
-      team_id:
-        type: integer
-      type:
-        type: string
-      updated_at:
-        type: string
-      user_email:
-        type: string
-      user_id:
-        type: integer
-    type: object
   handlers.AgentResponse:
     properties:
       created_at:
@@ -113,22 +87,23 @@ definitions:
     type: object
   handlers.ChatStreamRequest:
     properties:
-      agentId:
-        type: string
-      conversationId:
-        type: string
-      creatingAgent:
-        type: boolean
-      hasAgents:
-        type: boolean
       message:
-        type: string
-      view:
         type: string
     required:
     - message
     type: object
-  handlers.CreateAgentBuilderLogRequest:
+  handlers.CreateAgentRequest:
+    properties:
+      description:
+        type: string
+      instructions:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handlers.CreateMessageRequest:
     properties:
       content:
         type: string
@@ -141,17 +116,6 @@ definitions:
         type: string
     required:
     - type
-    type: object
-  handlers.CreateAgentRequest:
-    properties:
-      description:
-        type: string
-      instructions:
-        type: string
-      name:
-        type: string
-    required:
-    - name
     type: object
   handlers.CreateTeamMcpServerRequest:
     properties:
@@ -260,14 +224,31 @@ definitions:
       updated_at:
         type: string
     type: object
-  handlers.Paginated-handlers_AgentBuilderLogResponse:
+  handlers.MessageResponse:
     properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.AgentBuilderLogResponse'
-        type: array
-      meta:
-        $ref: '#/definitions/handlers.PaginationMeta'
+      agent_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      metadata: {}
+      parent_log_id:
+        type: string
+      project_id:
+        type: integer
+      team_id:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_email:
+        type: string
+      user_id:
+        type: integer
     type: object
   handlers.Paginated-handlers_AgentResponse:
     properties:
@@ -283,6 +264,15 @@ definitions:
       data:
         items:
           $ref: '#/definitions/handlers.AgentRunResponse'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
+    type: object
+  handlers.Paginated-handlers_MessageResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.MessageResponse'
         type: array
       meta:
         $ref: '#/definitions/handlers.PaginationMeta'
@@ -317,11 +307,6 @@ definitions:
           $ref: '#/definitions/handlers.McpServerResponse'
         type: array
     type: object
-  handlers.SingleResponse-handlers_AgentBuilderLogResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.AgentBuilderLogResponse'
-    type: object
   handlers.SingleResponse-handlers_AgentResponse:
     properties:
       data:
@@ -346,6 +331,11 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/handlers.MeResponse'
+    type: object
+  handlers.SingleResponse-handlers_MessageResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.MessageResponse'
     type: object
   handlers.SingleResponse-handlers_composioAppsResponse:
     properties:
@@ -405,7 +395,7 @@ definitions:
         type: array
       description:
         type: string
-      displayName:
+      display_name:
         type: string
       enabled:
         type: boolean
@@ -692,15 +682,15 @@ paths:
     post:
       consumes:
       - application/json
-      description: Streams conversational updates, agent refinements, and run output
-        via server-sent events
+      description: Streams conversational updates and chat responses via server-sent
+        events. Only requires a message parameter.
       parameters:
-      - description: Agent ID or 'lobby' for general chat
+      - description: Agent ID
         in: path
         name: agent_id
         required: true
         type: string
-      - description: Chat stream payload
+      - description: Chat stream payload containing only the message
         in: body
         name: chat
         required: true
@@ -738,11 +728,11 @@ paths:
       summary: Stream chat with agent builder
       tags:
       - chat
-  /agents/{agent_id}/logs:
+  /agents/{agent_id}/messages:
     delete:
       consumes:
       - application/json
-      description: Delete all chat transcript entries for the selected agent
+      description: Delete all chat message entries for the selected agent
       parameters:
       - description: Agent ID
         in: path
@@ -778,13 +768,13 @@ paths:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Clear agent chat logs
+      summary: Clear agent chat messages
       tags:
       - chat
     get:
       consumes:
       - application/json
-      description: Retrieve chat transcript entries for the selected agent with pagination
+      description: Retrieve chat message entries for the selected agent with pagination
         support
       parameters:
       - description: Agent ID
@@ -812,7 +802,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.Paginated-handlers_AgentBuilderLogResponse'
+            $ref: '#/definitions/handlers.Paginated-handlers_MessageResponse'
         "400":
           description: Bad Request
           schema:
@@ -835,7 +825,7 @@ paths:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: List agent chat logs
+      summary: List agent chat messages
       tags:
       - chat
     post:
@@ -849,19 +839,19 @@ paths:
         name: agent_id
         required: true
         type: string
-      - description: Chat log payload
+      - description: Chat message payload
         in: body
-        name: log
+        name: message
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateAgentBuilderLogRequest'
+          $ref: '#/definitions/handlers.CreateMessageRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentBuilderLogResponse'
+            $ref: '#/definitions/handlers.SingleResponse-handlers_MessageResponse'
         "400":
           description: Bad Request
           schema:
@@ -884,7 +874,7 @@ paths:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Create agent chat log entry
+      summary: Create agent chat message entry
       tags:
       - chat
   /agents/{agent_id}/runs:
@@ -1116,123 +1106,6 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
-  /logs/lobby:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all lobby chat transcript entries for the current team
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SuccessResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Clear lobby chat logs
-      tags:
-      - chat
-    get:
-      consumes:
-      - application/json
-      description: Retrieve lobby chat transcript entries for the current team with
-        pagination support
-      parameters:
-      - default: 1
-        description: 'Page number (default: 1)'
-        in: query
-        name: page
-        type: integer
-      - default: 20
-        description: 'Page size (default: 20, max: 100)'
-        in: query
-        name: page_size
-        type: integer
-      - description: Alias for page_size to support legacy clients
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.Paginated-handlers_AgentBuilderLogResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List lobby chat logs
-      tags:
-      - chat
-    post:
-      consumes:
-      - application/json
-      description: Append a new lobby chat message, tool event, or metadata record
-        for the current team
-      parameters:
-      - description: Chat log payload
-        in: body
-        name: log
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateAgentBuilderLogRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentBuilderLogResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create lobby chat log entry
-      tags:
-      - chat
   /mcp/servers:
     get:
       description: Return all MCP servers visible to the authenticated user, including
