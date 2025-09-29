@@ -1135,6 +1135,50 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
+  /agents/runs:
+    get:
+      consumes:
+      - application/json
+      description: Get all runs for the authenticated user's team with pagination
+      parameters:
+      - default: 1
+        description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 'Number of items per page (default: 10, max: 100)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-handlers_AgentRunResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all agent runs for the current team
+      tags:
+      - agent-runs
   /mcp/servers:
     get:
       description: Return all MCP servers visible to the authenticated user, including
