@@ -1,5 +1,28 @@
 basePath: /v1
 definitions:
+  composio.AuthType:
+    enum:
+    - none
+    - oauth
+    - api_key
+    type: string
+    x-enum-varnames:
+    - AuthTypeNone
+    - AuthTypeOAuth
+    - AuthTypeAPIKey
+  composio.ConnectedAccount:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      toolkit:
+        type: string
+      user_id:
+        type: string
+    type: object
   handlers.AgentResponse:
     properties:
       created_at:
@@ -10,6 +33,10 @@ definitions:
         type: string
       description:
         type: string
+      enabled_toolkits:
+        items:
+          type: string
+        type: array
       id:
         type: string
       instructions:
@@ -96,6 +123,10 @@ definitions:
     properties:
       description:
         type: string
+      enabled_toolkits:
+        items:
+          type: string
+        type: array
       instructions:
         type: string
       name:
@@ -328,12 +359,35 @@ definitions:
       metadata: {}
       model:
         type: string
+      tool_calls:
+        items:
+          $ref: '#/definitions/handlers.RunAgentToolCall'
+        type: array
+    type: object
+  handlers.RunAgentToolCall:
+    properties:
+      alias:
+        type: string
+      arguments:
+        additionalProperties: true
+        type: object
+      server_id:
+        type: string
+      tool_name:
+        type: string
     type: object
   handlers.SingleResponse-array_handlers_McpServerResponse:
     properties:
       data:
         items:
           $ref: '#/definitions/handlers.McpServerResponse'
+        type: array
+    type: object
+  handlers.SingleResponse-array_services_ToolkitState:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/services.ToolkitState'
         type: array
     type: object
   handlers.SingleResponse-handlers_AgentResponse:
@@ -366,10 +420,30 @@ definitions:
       data:
         $ref: '#/definitions/handlers.MessageResponse'
     type: object
-  handlers.SingleResponse-handlers_composioAppsResponse:
+  handlers.SingleResponse-handlers_composioAccountsResponse:
     properties:
       data:
-        $ref: '#/definitions/handlers.composioAppsResponse'
+        $ref: '#/definitions/handlers.composioAccountsResponse'
+    type: object
+  handlers.SingleResponse-handlers_composioInitResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.composioInitResponse'
+    type: object
+  handlers.SingleResponse-handlers_composioMCPURLResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.composioMCPURLResponse'
+    type: object
+  handlers.SingleResponse-services_ConnectLinkResult:
+    properties:
+      data:
+        $ref: '#/definitions/services.ConnectLinkResult'
+    type: object
+  handlers.SingleResponse-services_SyncResult:
+    properties:
+      data:
+        $ref: '#/definitions/services.SyncResult'
     type: object
   handlers.SuccessResponse:
     properties:
@@ -382,6 +456,10 @@ definitions:
     properties:
       description:
         type: string
+      enabled_toolkits:
+        items:
+          type: string
+        type: array
       instructions:
         type: string
       name:
@@ -416,36 +494,128 @@ definitions:
       url:
         type: string
     type: object
-  handlers.composioApp:
+  handlers.composioAccountsResponse:
     properties:
-      categories:
+      accounts:
+        items:
+          $ref: '#/definitions/composio.ConnectedAccount'
+        type: array
+    type: object
+  handlers.composioConnectCallbackRequest:
+    properties:
+      connected_account_id:
+        type: string
+      team_id:
+        type: string
+      toolkit:
+        type: string
+    type: object
+  handlers.composioConnectLinkRequest:
+    properties:
+      callback_url:
+        type: string
+      team_id:
+        type: string
+      toolkit:
+        type: string
+    type: object
+  handlers.composioInitRequest:
+    properties:
+      team_id:
+        type: string
+    type: object
+  handlers.composioInitResponse:
+    properties:
+      server_id:
+        type: string
+      status:
+        type: string
+    type: object
+  handlers.composioMCPURLResponse:
+    properties:
+      additional_urls:
+        additionalProperties:
+          type: string
+        type: object
+      connected_accounts_url:
         items:
           type: string
         type: array
+      mcp_url:
+        type: string
+      user_ids_url:
+        items:
+          type: string
+        type: array
+    type: object
+  handlers.composioSyncRequest:
+    properties:
+      enabled_toolkits:
+        items:
+          type: string
+        type: array
+      team_id:
+        type: string
+    type: object
+  services.ConnectLinkResult:
+    properties:
+      connected_account_id:
+        type: string
+      redirect_url:
+        type: string
+      toolkit:
+        type: string
+    type: object
+  services.SyncResult:
+    properties:
+      needs_connection:
+        items:
+          type: string
+        type: array
+      server_id:
+        type: string
+      toolkits_applied:
+        items:
+          type: string
+        type: array
+    type: object
+  services.ToolkitState:
+    properties:
+      allowed_tools:
+        items:
+          type: string
+        type: array
+      auth_type:
+        $ref: '#/definitions/composio.AuthType'
+      connected_account_id:
+        type: string
       description:
-        type: string
-      display_name:
-        type: string
-      enabled:
-        type: boolean
-      key:
-        type: string
-      logo:
         type: string
       name:
         type: string
-      tags:
-        items:
-          type: string
-        type: array
+      needs_connection:
+        type: boolean
+      pending_connected_account_id:
+        type: string
+      requires_auth:
+        type: boolean
+      slug:
+        type: string
+      status:
+        $ref: '#/definitions/types.ToolkitStatus'
     type: object
-  handlers.composioAppsResponse:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/handlers.composioApp'
-        type: array
-    type: object
+  types.ToolkitStatus:
+    enum:
+    - enabled
+    - connected
+    - disabled
+    - error
+    type: string
+    x-enum-varnames:
+    - ToolkitStatusEnabled
+    - ToolkitStatusConnected
+    - ToolkitStatusDisabled
+    - ToolkitStatusError
 host: localhost:8000
 info:
   contact:
@@ -1179,6 +1349,276 @@ paths:
       summary: List all agent runs for the current team
       tags:
       - agent-runs
+  /composio/connect-link:
+    post:
+      consumes:
+      - application/json
+      description: Generate a hosted authentication link for a specific Composio toolkit
+      parameters:
+      - description: Connect link request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.composioConnectLinkRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_ConnectLinkResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Composio connect link
+      tags:
+      - composio
+  /composio/connect/callback:
+    post:
+      consumes:
+      - application/json
+      description: Finalise a toolkit connection after the Composio hosted auth flow
+      parameters:
+      - description: Connect callback payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.composioConnectCallbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_SyncResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Complete Composio connect callback
+      tags:
+      - composio
+  /composio/connected-accounts:
+    get:
+      description: List connected Composio accounts for the authenticated team
+      parameters:
+      - description: Team UUID
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_composioAccountsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List Composio connected accounts
+      tags:
+      - composio
+  /composio/mcp-url:
+    get:
+      description: Generate connection URLs for the team's Composio MCP server
+      parameters:
+      - description: Team UUID
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_composioMCPURLResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Generate Composio MCP connection URLs
+      tags:
+      - composio
+  /composio/server/init:
+    post:
+      consumes:
+      - application/json
+      description: Ensure the authenticated team has a Composio MCP server provisioned
+      parameters:
+      - description: Server init payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.composioInitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_composioInitResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Initialise Composio MCP server
+      tags:
+      - composio
+  /composio/server/sync:
+    patch:
+      consumes:
+      - application/json
+      description: Update enabled Composio toolkits for the team and synchronise with
+        Composio
+      parameters:
+      - description: Toolkit sync request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.composioSyncRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_SyncResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Sync Composio server toolkits
+      tags:
+      - composio
+  /composio/toolkits:
+    get:
+      description: List available Composio toolkits along with the team's connection
+        status
+      parameters:
+      - description: Team UUID
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_services_ToolkitState'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List Composio toolkits
+      tags:
+      - composio
   /mcp/servers:
     get:
       description: Return all MCP servers visible to the authenticated user, including
@@ -1414,44 +1854,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Update MCP server
-      tags:
-      - mcp
-  /mcp/servers/{server_id}/apps:
-    get:
-      description: Retrieve the list of apps/tools exposed by the specified MCP server
-        (currently proxies Composio)
-      parameters:
-      - description: MCP server identifier
-        in: path
-        name: server_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_composioAppsResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List MCP server apps
       tags:
       - mcp
   /mcp/servers/catalog:
