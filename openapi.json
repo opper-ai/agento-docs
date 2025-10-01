@@ -1123,6 +1123,132 @@
                 }
             }
         },
+        "/agents/{agent_id}/tools": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get agent's enabled tools and available tools from connected toolkits",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agents"
+                ],
+                "summary": "Get agent tools",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_AgentToolsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update which tools are enabled for this agent",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agents"
+                ],
+                "summary": "Update agent tools",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Tools update request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UpdateAgentToolsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_AgentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/composio/connect-link": {
             "post": {
                 "security": [
@@ -1306,189 +1432,6 @@
                 }
             }
         },
-        "/composio/mcp-url": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Generate connection URLs for the team's Composio MCP server",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "Generate Composio MCP connection URLs",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team UUID",
-                        "name": "team_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_composioMCPURLResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/server/init": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Ensure the authenticated team has a Composio MCP server provisioned",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "Initialise Composio MCP server",
-                "parameters": [
-                    {
-                        "description": "Server init payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.composioInitRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_composioInitResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/server/sync": {
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Update enabled Composio toolkits for the team and synchronise with Composio",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "Sync Composio server toolkits",
-                "parameters": [
-                    {
-                        "description": "Toolkit sync request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.composioSyncRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-services_SyncResult"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/composio/toolkits": {
             "get": {
                 "security": [
@@ -1539,6 +1482,121 @@
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/composio/toolkits/disconnect": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove the connected account for a toolkit so it can be re-authorized",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "composio"
+                ],
+                "summary": "Disconnect Composio toolkit",
+                "parameters": [
+                    {
+                        "description": "Disconnect toolkit payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.composioDisconnectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-services_SyncResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/composio/tools/{toolkit_slug}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List all available tools for a specific Composio toolkit",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "composio"
+                ],
+                "summary": "List tools for a toolkit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Toolkit slug (e.g., 'github', 'gmail')",
+                        "name": "toolkit_slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-array_composio_ToolDefinition"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2078,9 +2136,40 @@
                     "type": "string"
                 },
                 "toolkit": {
+                    "$ref": "#/definitions/composio.ConnectedToolkit"
+                },
+                "updated_at": {
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "composio.ConnectedToolkit": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "composio.ToolDefinition": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -2100,7 +2189,7 @@
                 "description": {
                     "type": "string"
                 },
-                "enabled_toolkits": {
+                "enabled_tools": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2162,6 +2251,26 @@
                     "type": "string"
                 },
                 "usage": {}
+            }
+        },
+        "handlers.AgentToolsResponse": {
+            "type": "object",
+            "properties": {
+                "available_tools": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/composio.ToolDefinition"
+                        }
+                    }
+                },
+                "enabled_tools": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
             }
         },
         "handlers.Balance": {
@@ -2239,12 +2348,6 @@
             "properties": {
                 "description": {
                     "type": "string"
-                },
-                "enabled_toolkits": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "instructions": {
                     "type": "string"
@@ -2616,6 +2719,17 @@
                 }
             }
         },
+        "handlers.SingleResponse-array_composio_ToolDefinition": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/composio.ToolDefinition"
+                    }
+                }
+            }
+        },
         "handlers.SingleResponse-array_handlers_McpServerResponse": {
             "type": "object",
             "properties": {
@@ -2651,6 +2765,14 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/handlers.AgentRunResponse"
+                }
+            }
+        },
+        "handlers.SingleResponse-handlers_AgentToolsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.AgentToolsResponse"
                 }
             }
         },
@@ -2694,22 +2816,6 @@
                 }
             }
         },
-        "handlers.SingleResponse-handlers_composioInitResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.composioInitResponse"
-                }
-            }
-        },
-        "handlers.SingleResponse-handlers_composioMCPURLResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.composioMCPURLResponse"
-                }
-            }
-        },
         "handlers.SingleResponse-services_ConnectLinkResult": {
             "type": "object",
             "properties": {
@@ -2743,12 +2849,6 @@
                 "description": {
                     "type": "string"
                 },
-                "enabled_toolkits": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "instructions": {
                     "type": "string"
                 },
@@ -2756,6 +2856,17 @@
                     "type": "string"
                 },
                 "user_preferences": {}
+            }
+        },
+        "handlers.UpdateAgentToolsRequest": {
+            "type": "object",
+            "properties": {
+                "enabled_tools": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
             }
         },
         "handlers.UpdateTeamMcpServerRequest": {
@@ -2838,61 +2949,13 @@
                 }
             }
         },
-        "handlers.composioInitRequest": {
+        "handlers.composioDisconnectRequest": {
             "type": "object",
             "properties": {
                 "team_id": {
                     "type": "string"
-                }
-            }
-        },
-        "handlers.composioInitResponse": {
-            "type": "object",
-            "properties": {
-                "server_id": {
-                    "type": "string"
                 },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.composioMCPURLResponse": {
-            "type": "object",
-            "properties": {
-                "additional_urls": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "connected_accounts_url": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "mcp_url": {
-                    "type": "string"
-                },
-                "user_ids_url": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "handlers.composioSyncRequest": {
-            "type": "object",
-            "properties": {
-                "enabled_toolkits": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "team_id": {
+                "toolkit": {
                     "type": "string"
                 }
             }

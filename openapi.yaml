@@ -19,8 +19,28 @@ definitions:
       status:
         type: string
       toolkit:
+        $ref: '#/definitions/composio.ConnectedToolkit'
+      updated_at:
         type: string
       user_id:
+        type: string
+    type: object
+  composio.ConnectedToolkit:
+    properties:
+      name:
+        type: string
+      slug:
+        type: string
+    type: object
+  composio.ToolDefinition:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      display_name:
+        type: string
+      name:
         type: string
     type: object
   handlers.AgentResponse:
@@ -33,7 +53,7 @@ definitions:
         type: string
       description:
         type: string
-      enabled_toolkits:
+      enabled_tools:
         items:
           type: string
         type: array
@@ -75,6 +95,19 @@ definitions:
       updated_at:
         type: string
       usage: {}
+    type: object
+  handlers.AgentToolsResponse:
+    properties:
+      available_tools:
+        additionalProperties:
+          items:
+            $ref: '#/definitions/composio.ToolDefinition'
+          type: array
+        type: object
+      enabled_tools:
+        items:
+          type: string
+        type: array
     type: object
   handlers.Balance:
     properties:
@@ -123,10 +156,6 @@ definitions:
     properties:
       description:
         type: string
-      enabled_toolkits:
-        items:
-          type: string
-        type: array
       instructions:
         type: string
       name:
@@ -376,6 +405,13 @@ definitions:
       tool_name:
         type: string
     type: object
+  handlers.SingleResponse-array_composio_ToolDefinition:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/composio.ToolDefinition'
+        type: array
+    type: object
   handlers.SingleResponse-array_handlers_McpServerResponse:
     properties:
       data:
@@ -399,6 +435,11 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/handlers.AgentRunResponse'
+    type: object
+  handlers.SingleResponse-handlers_AgentToolsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.AgentToolsResponse'
     type: object
   handlers.SingleResponse-handlers_BuildAgentResponse:
     properties:
@@ -425,16 +466,6 @@ definitions:
       data:
         $ref: '#/definitions/handlers.composioAccountsResponse'
     type: object
-  handlers.SingleResponse-handlers_composioInitResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.composioInitResponse'
-    type: object
-  handlers.SingleResponse-handlers_composioMCPURLResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.composioMCPURLResponse'
-    type: object
   handlers.SingleResponse-services_ConnectLinkResult:
     properties:
       data:
@@ -456,15 +487,18 @@ definitions:
     properties:
       description:
         type: string
-      enabled_toolkits:
-        items:
-          type: string
-        type: array
       instructions:
         type: string
       name:
         type: string
       user_preferences: {}
+    type: object
+  handlers.UpdateAgentToolsRequest:
+    properties:
+      enabled_tools:
+        items:
+          type: string
+        type: array
     type: object
   handlers.UpdateTeamMcpServerRequest:
     properties:
@@ -519,42 +553,11 @@ definitions:
       toolkit:
         type: string
     type: object
-  handlers.composioInitRequest:
+  handlers.composioDisconnectRequest:
     properties:
       team_id:
         type: string
-    type: object
-  handlers.composioInitResponse:
-    properties:
-      server_id:
-        type: string
-      status:
-        type: string
-    type: object
-  handlers.composioMCPURLResponse:
-    properties:
-      additional_urls:
-        additionalProperties:
-          type: string
-        type: object
-      connected_accounts_url:
-        items:
-          type: string
-        type: array
-      mcp_url:
-        type: string
-      user_ids_url:
-        items:
-          type: string
-        type: array
-    type: object
-  handlers.composioSyncRequest:
-    properties:
-      enabled_toolkits:
-        items:
-          type: string
-        type: array
-      team_id:
+      toolkit:
         type: string
     type: object
   services.ConnectLinkResult:
@@ -1305,6 +1308,87 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
+  /agents/{agent_id}/tools:
+    get:
+      description: Get agent's enabled tools and available tools from connected toolkits
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentToolsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get agent tools
+      tags:
+      - agents
+    patch:
+      consumes:
+      - application/json
+      description: Update which tools are enabled for this agent
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Tools update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateAgentToolsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update agent tools
+      tags:
+      - agents
   /agents/runs:
     get:
       consumes:
@@ -1465,123 +1549,6 @@ paths:
       summary: List Composio connected accounts
       tags:
       - composio
-  /composio/mcp-url:
-    get:
-      description: Generate connection URLs for the team's Composio MCP server
-      parameters:
-      - description: Team UUID
-        in: query
-        name: team_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_composioMCPURLResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Generate Composio MCP connection URLs
-      tags:
-      - composio
-  /composio/server/init:
-    post:
-      consumes:
-      - application/json
-      description: Ensure the authenticated team has a Composio MCP server provisioned
-      parameters:
-      - description: Server init payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.composioInitRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_composioInitResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Initialise Composio MCP server
-      tags:
-      - composio
-  /composio/server/sync:
-    patch:
-      consumes:
-      - application/json
-      description: Update enabled Composio toolkits for the team and synchronise with
-        Composio
-      parameters:
-      - description: Toolkit sync request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.composioSyncRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-services_SyncResult'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Sync Composio server toolkits
-      tags:
-      - composio
   /composio/toolkits:
     get:
       description: List available Composio toolkits along with the team's connection
@@ -1617,6 +1584,79 @@ paths:
       security:
       - BearerAuth: []
       summary: List Composio toolkits
+      tags:
+      - composio
+  /composio/toolkits/disconnect:
+    post:
+      consumes:
+      - application/json
+      description: Remove the connected account for a toolkit so it can be re-authorized
+      parameters:
+      - description: Disconnect toolkit payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.composioDisconnectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_SyncResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Disconnect Composio toolkit
+      tags:
+      - composio
+  /composio/tools/{toolkit_slug}:
+    get:
+      description: List all available tools for a specific Composio toolkit
+      parameters:
+      - description: Toolkit slug (e.g., 'github', 'gmail')
+        in: path
+        name: toolkit_slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_composio_ToolDefinition'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List tools for a toolkit
       tags:
       - composio
   /mcp/servers:
