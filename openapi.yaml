@@ -787,6 +787,50 @@ paths:
       summary: Get agent
       tags:
       - agents
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing agent by ID for the current user's team
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Agent update data
+        in: body
+        name: agent
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateAgentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update agent
+      tags:
+      - agents
     put:
       consumes:
       - application/json
@@ -1257,6 +1301,55 @@ paths:
       security:
       - BearerAuth: []
       summary: Get agent run
+      tags:
+      - agent-runs
+    patch:
+      consumes:
+      - application/json
+      description: Update an agent run by ID
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Run ID
+        in: path
+        name: run_id
+        required: true
+        type: integer
+      - description: Agent run update data
+        in: body
+        name: run
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AgentRunResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update agent run
       tags:
       - agent-runs
     put:
