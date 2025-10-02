@@ -42,6 +42,17 @@ definitions:
         type: string
       name:
         type: string
+      toolkit:
+        $ref: '#/definitions/composio.ToolkitInfo'
+    type: object
+  composio.ToolkitInfo:
+    properties:
+      logo:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
     type: object
   handlers.AgentResponse:
     properties:
@@ -593,6 +604,8 @@ definitions:
       connected_account_id:
         type: string
       description:
+        type: string
+      logo:
         type: string
       name:
         type: string

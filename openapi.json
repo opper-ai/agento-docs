@@ -2314,6 +2314,23 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "toolkit": {
+                    "$ref": "#/definitions/composio.ToolkitInfo"
+                }
+            }
+        },
+        "composio.ToolkitInfo": {
+            "type": "object",
+            "properties": {
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
                 }
             }
         },
@@ -3153,6 +3170,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "logo": {
                     "type": "string"
                 },
                 "name": {
