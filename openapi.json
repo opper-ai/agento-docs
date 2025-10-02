@@ -1392,6 +1392,173 @@
                 }
             }
         },
+        "/agents/{agent_id}/webhook-tokens": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List all webhook tokens for an agent",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webhooks"
+                ],
+                "summary": "List webhook tokens",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Paginated-handlers_WebhookTokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new webhook token for triggering agent runs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webhooks"
+                ],
+                "summary": "Create webhook token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Token creation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateWebhookTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_WebhookTokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agents/{agent_id}/webhook-tokens/{token_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete a webhook token for an agent",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webhooks"
+                ],
+                "summary": "Delete webhook token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token UUID",
+                        "name": "token_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SuccessResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/composio/connect-link": {
             "post": {
                 "security": [
@@ -2250,6 +2417,76 @@
                     }
                 }
             }
+        },
+        "/webhook/agents/{agent_id}/run": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Execute an agent using webhook authentication. Set sync=true to wait for completion and receive output.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webhooks"
+                ],
+                "summary": "Trigger agent run via webhook",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Run request (set sync=true for synchronous execution)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TriggerAgentRunRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Synchronous execution completed (when sync=true)",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_AgentRunResponse"
+                        }
+                    },
+                    "202": {
+                        "description": "Asynchronous execution started (when sync=false or omitted)",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_AgentRunResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2590,6 +2827,17 @@
                 }
             }
         },
+        "handlers.CreateWebhookTokenRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.DeleteResponse": {
             "type": "object",
             "properties": {
@@ -2822,6 +3070,20 @@
                 }
             }
         },
+        "handlers.Paginated-handlers_WebhookTokenResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.WebhookTokenResponse"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/handlers.PaginationMeta"
+                }
+            }
+        },
         "handlers.PaginationMeta": {
             "type": "object",
             "properties": {
@@ -2968,6 +3230,14 @@
                 }
             }
         },
+        "handlers.SingleResponse-handlers_WebhookTokenResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handlers.WebhookTokenResponse"
+                }
+            }
+        },
         "handlers.SingleResponse-handlers_composioAccountsResponse": {
             "type": "object",
             "properties": {
@@ -2999,6 +3269,22 @@
                     "type": "string"
                 },
                 "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "handlers.TriggerAgentRunRequest": {
+            "type": "object",
+            "properties": {
+                "input": {
+                    "type": "string"
+                },
+                "metadata": {},
+                "model": {
+                    "type": "string"
+                },
+                "sync": {
+                    "description": "If true, wait for agent run completion and return output",
                     "type": "boolean"
                 }
             }
@@ -3066,6 +3352,35 @@
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.WebhookTokenResponse": {
+            "type": "object",
+            "properties": {
+                "agent_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_used_at": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "token_prefix": {
                     "type": "string"
                 }
             }

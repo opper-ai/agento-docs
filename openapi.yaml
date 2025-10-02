@@ -224,6 +224,13 @@ definitions:
     - server_id
     - url
     type: object
+  handlers.CreateWebhookTokenRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
   handlers.DeleteResponse:
     properties:
       deleted:
@@ -377,6 +384,15 @@ definitions:
       meta:
         $ref: '#/definitions/handlers.PaginationMeta'
     type: object
+  handlers.Paginated-handlers_WebhookTokenResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.WebhookTokenResponse'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
+    type: object
   handlers.PaginationMeta:
     properties:
       page:
@@ -472,6 +488,11 @@ definitions:
       data:
         $ref: '#/definitions/handlers.MessageResponse'
     type: object
+  handlers.SingleResponse-handlers_WebhookTokenResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.WebhookTokenResponse'
+    type: object
   handlers.SingleResponse-handlers_composioAccountsResponse:
     properties:
       data:
@@ -492,6 +513,17 @@ definitions:
       message:
         type: string
       success:
+        type: boolean
+    type: object
+  handlers.TriggerAgentRunRequest:
+    properties:
+      input:
+        type: string
+      metadata: {}
+      model:
+        type: string
+      sync:
+        description: If true, wait for agent run completion and return output
         type: boolean
     type: object
   handlers.UpdateAgentRequest:
@@ -537,6 +569,25 @@ definitions:
       transport:
         type: string
       url:
+        type: string
+    type: object
+  handlers.WebhookTokenResponse:
+    properties:
+      agent_id:
+        type: string
+      created_at:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: string
+      last_used_at:
+        type: string
+      name:
+        type: string
+      token:
+        type: string
+      token_prefix:
         type: string
     type: object
   handlers.composioAccountsResponse:
@@ -1495,6 +1546,113 @@ paths:
       summary: Update agent tools
       tags:
       - agents
+  /agents/{agent_id}/webhook-tokens:
+    get:
+      consumes:
+      - application/json
+      description: List all webhook tokens for an agent
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-handlers_WebhookTokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List webhook tokens
+      tags:
+      - webhooks
+    post:
+      consumes:
+      - application/json
+      description: Create a new webhook token for triggering agent runs
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Token creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateWebhookTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_WebhookTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create webhook token
+      tags:
+      - webhooks
+  /agents/{agent_id}/webhook-tokens/{token_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a webhook token for an agent
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Token UUID
+        in: path
+        name: token_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete webhook token
+      tags:
+      - webhooks
   /agents/runs:
     get:
       consumes:
@@ -2090,6 +2248,52 @@ paths:
       summary: Update current user profile
       tags:
       - users
+  /webhook/agents/{agent_id}/run:
+    post:
+      consumes:
+      - application/json
+      description: Execute an agent using webhook authentication. Set sync=true to
+        wait for completion and receive output.
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Run request (set sync=true for synchronous execution)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TriggerAgentRunRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Synchronous execution completed (when sync=true)
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentRunResponse'
+        "202":
+          description: Asynchronous execution started (when sync=false or omitted)
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentRunResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Trigger agent run via webhook
+      tags:
+      - webhooks
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.
