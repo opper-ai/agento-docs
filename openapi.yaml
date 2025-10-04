@@ -1,37 +1,5 @@
 basePath: /v1
 definitions:
-  composio.AuthType:
-    enum:
-    - none
-    - oauth
-    - api_key
-    type: string
-    x-enum-varnames:
-    - AuthTypeNone
-    - AuthTypeOAuth
-    - AuthTypeAPIKey
-  composio.ConnectedAccount:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      status:
-        type: string
-      toolkit:
-        $ref: '#/definitions/composio.ConnectedToolkit'
-      updated_at:
-        type: string
-      user_id:
-        type: string
-    type: object
-  composio.ConnectedToolkit:
-    properties:
-      name:
-        type: string
-      slug:
-        type: string
-    type: object
   composio.ToolDefinition:
     properties:
       category:
@@ -54,6 +22,16 @@ definitions:
       slug:
         type: string
     type: object
+  db.ConnectionType:
+    enum:
+    - composio
+    - global-mcp
+    - custom-mcp
+    type: string
+    x-enum-varnames:
+    - ConnectionTypeComposio
+    - ConnectionTypeGlobalMcp
+    - ConnectionTypeCustomMcp
   handlers.AgentResponse:
     properties:
       created_at:
@@ -188,42 +166,6 @@ definitions:
     required:
     - type
     type: object
-  handlers.CreateTeamMcpServerRequest:
-    properties:
-      auth:
-        additionalProperties: {}
-        type: object
-      category:
-        type: string
-      description:
-        type: string
-      enabled:
-        type: boolean
-      global_server_id:
-        type: string
-      metadata:
-        additionalProperties: {}
-        type: object
-      name:
-        type: string
-      options:
-        additionalProperties: {}
-        type: object
-      server_id:
-        type: string
-      tags:
-        items:
-          type: string
-        type: array
-      transport:
-        type: string
-      url:
-        type: string
-    required:
-    - name
-    - server_id
-    - url
-    type: object
   handlers.CreateWebhookTokenRequest:
     properties:
       name:
@@ -241,46 +183,6 @@ definitions:
   handlers.ErrorResponse:
     properties:
       error:
-        type: string
-    type: object
-  handlers.McpServerResponse:
-    properties:
-      auth:
-        additionalProperties: {}
-        type: object
-      category:
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      enabled:
-        type: boolean
-      id:
-        type: string
-      linked_global_id:
-        type: string
-      metadata:
-        additionalProperties: {}
-        type: object
-      name:
-        type: string
-      options:
-        additionalProperties: {}
-        type: object
-      server_id:
-        type: string
-      source:
-        type: string
-      tags:
-        items:
-          type: string
-        type: array
-      transport:
-        type: string
-      updated_at:
-        type: string
-      url:
         type: string
     type: object
   handlers.MeResponse:
@@ -432,25 +334,25 @@ definitions:
       tool_name:
         type: string
     type: object
-  handlers.SingleResponse-array_composio_ToolDefinition:
+  handlers.SingleResponse-array_services_AgentConnection:
     properties:
       data:
         items:
-          $ref: '#/definitions/composio.ToolDefinition'
+          $ref: '#/definitions/services.AgentConnection'
         type: array
     type: object
-  handlers.SingleResponse-array_handlers_McpServerResponse:
+  handlers.SingleResponse-array_services_ConnectionSummary:
     properties:
       data:
         items:
-          $ref: '#/definitions/handlers.McpServerResponse'
+          $ref: '#/definitions/services.ConnectionSummary'
         type: array
     type: object
-  handlers.SingleResponse-array_services_ToolkitState:
+  handlers.SingleResponse-array_services_ToolkitWithTools:
     properties:
       data:
         items:
-          $ref: '#/definitions/services.ToolkitState'
+          $ref: '#/definitions/services.ToolkitWithTools'
         type: array
     type: object
   handlers.SingleResponse-handlers_AgentResponse:
@@ -473,11 +375,6 @@ definitions:
       data:
         $ref: '#/definitions/handlers.BuildAgentResponse'
     type: object
-  handlers.SingleResponse-handlers_McpServerResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.McpServerResponse'
-    type: object
   handlers.SingleResponse-handlers_MeResponse:
     properties:
       data:
@@ -493,20 +390,25 @@ definitions:
       data:
         $ref: '#/definitions/handlers.WebhookTokenResponse'
     type: object
-  handlers.SingleResponse-handlers_composioAccountsResponse:
+  handlers.SingleResponse-handlers_createConnectionResponse:
     properties:
       data:
-        $ref: '#/definitions/handlers.composioAccountsResponse'
+        $ref: '#/definitions/handlers.createConnectionResponse'
     type: object
-  handlers.SingleResponse-services_ConnectLinkResult:
+  handlers.SingleResponse-services_AgentConnection:
     properties:
       data:
-        $ref: '#/definitions/services.ConnectLinkResult'
+        $ref: '#/definitions/services.AgentConnection'
     type: object
-  handlers.SingleResponse-services_SyncResult:
+  handlers.SingleResponse-services_ConnectionSummary:
     properties:
       data:
-        $ref: '#/definitions/services.SyncResult'
+        $ref: '#/definitions/services.ConnectionSummary'
+    type: object
+  handlers.SingleResponse-services_ConnectionsStatus:
+    properties:
+      data:
+        $ref: '#/definitions/services.ConnectionsStatus'
     type: object
   handlers.SuccessResponse:
     properties:
@@ -543,34 +445,6 @@ definitions:
           type: string
         type: array
     type: object
-  handlers.UpdateTeamMcpServerRequest:
-    properties:
-      auth:
-        additionalProperties: {}
-        type: object
-      category:
-        type: string
-      description:
-        type: string
-      enabled:
-        type: boolean
-      metadata:
-        additionalProperties: {}
-        type: object
-      name:
-        type: string
-      options:
-        additionalProperties: {}
-        type: object
-      tags:
-        items:
-          type: string
-        type: array
-      transport:
-        type: string
-      url:
-        type: string
-    type: object
   handlers.WebhookTokenResponse:
     properties:
       agent_id:
@@ -590,99 +464,304 @@ definitions:
       token_prefix:
         type: string
     type: object
-  handlers.composioAccountsResponse:
+  handlers.agentConnectionUpdateRequest:
     properties:
-      accounts:
+      enabled:
+        type: boolean
+      enabled_tool_ids:
         items:
-          $ref: '#/definitions/composio.ConnectedAccount'
+          type: string
         type: array
     type: object
-  handlers.composioConnectCallbackRequest:
+  handlers.completeComposioCallbackRequest:
     properties:
       connected_account_id:
         type: string
+      message:
+        type: string
+      provider_payload:
+        additionalProperties: {}
+        type: object
+      provider_status:
+        type: string
+      status:
+        type: string
       team_id:
         type: string
-      toolkit:
-        type: string
     type: object
-  handlers.composioConnectLinkRequest:
+  handlers.connectConnectionRequest:
     properties:
       callback_url:
         type: string
-      team_id:
-        type: string
-      toolkit:
-        type: string
     type: object
-  handlers.composioDisconnectRequest:
+  handlers.createConnectionRequest:
     properties:
-      team_id:
+      auth:
+        additionalProperties: {}
+        type: object
+      callback_url:
         type: string
-      toolkit:
+      category:
         type: string
-    type: object
-  services.ConnectLinkResult:
-    properties:
-      connected_account_id:
+      display_name:
         type: string
-      redirect_url:
-        type: string
-      toolkit:
-        type: string
-    type: object
-  services.SyncResult:
-    properties:
-      needs_connection:
-        items:
-          type: string
-        type: array
+      enabled:
+        type: boolean
+      metadata:
+        additionalProperties: {}
+        type: object
+      options:
+        additionalProperties: {}
+        type: object
       server_id:
         type: string
-      toolkits_applied:
+      tags:
         items:
           type: string
         type: array
-    type: object
-  services.ToolkitState:
-    properties:
-      allowed_tools:
-        items:
-          type: string
-        type: array
-      auth_type:
-        $ref: '#/definitions/composio.AuthType'
-      connected_account_id:
+      template_id:
         type: string
+      toolkit_slug:
+        type: string
+      transport:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+    required:
+    - type
+    type: object
+  handlers.createConnectionResponse:
+    properties:
+      connection:
+        $ref: '#/definitions/services.ConnectionSummary'
+      session:
+        $ref: '#/definitions/services.ConnectionSession'
+    type: object
+  handlers.updateConnectionRequest:
+    properties:
+      auth:
+        additionalProperties: {}
+        type: object
+      display_name:
+        type: string
+      enabled:
+        type: boolean
+      metadata:
+        additionalProperties: {}
+        type: object
+      options:
+        additionalProperties: {}
+        type: object
+      transport:
+        type: string
+      url:
+        type: string
+    type: object
+  services.AgentConnection:
+    properties:
+      agent_enabled:
+        type: boolean
+      connection_id:
+        type: string
+      display_name:
+        type: string
+      enabled_tool_ids:
+        items:
+          type: string
+        type: array
+      metadata:
+        additionalProperties: {}
+        type: object
+      slug:
+        type: string
+      team_enabled:
+        type: boolean
+      team_status:
+        $ref: '#/definitions/types.ConnectionStatus'
+      toolkits:
+        items:
+          $ref: '#/definitions/services.AgentConnectionToolkit'
+        type: array
+      type:
+        $ref: '#/definitions/db.ConnectionType'
+    type: object
+  services.AgentConnectionTool:
+    properties:
       description:
+        type: string
+      display_name:
+        type: string
+      enabled:
+        type: boolean
+      input_schema:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      tool_id:
+        type: string
+    type: object
+  services.AgentConnectionToolkit:
+    properties:
+      display_name:
         type: string
       logo:
         type: string
-      name:
+      metadata:
+        additionalProperties: {}
+        type: object
+      slug:
         type: string
-      needs_connection:
-        type: boolean
-      pending_connected_account_id:
+      toolkit_id:
         type: string
-      requires_auth:
+      tools:
+        items:
+          $ref: '#/definitions/services.AgentConnectionTool'
+        type: array
+    type: object
+  services.ConnectionSession:
+    properties:
+      provider_payload:
+        additionalProperties: {}
+        type: object
+      redirect_url:
+        type: string
+      session_id:
+        type: string
+    type: object
+  services.ConnectionStatusCounts:
+    properties:
+      active:
+        type: integer
+      connected:
+        type: integer
+      disconnected:
+        type: integer
+      error:
+        type: integer
+      pending:
+        type: integer
+      total:
+        type: integer
+    type: object
+  services.ConnectionSummary:
+    properties:
+      created_at:
+        type: string
+      display_name:
+        type: string
+      enabled:
         type: boolean
+      id:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
       slug:
         type: string
       status:
-        $ref: '#/definitions/types.ToolkitStatus'
+        $ref: '#/definitions/types.ConnectionStatus'
+      template_id:
+        type: string
+      tool_count:
+        type: integer
+      transport:
+        type: string
+      type:
+        $ref: '#/definitions/db.ConnectionType'
+      updated_at:
+        type: string
+      url:
+        type: string
     type: object
-  types.ToolkitStatus:
+  services.ConnectionsStatus:
+    properties:
+      by_type:
+        additionalProperties:
+          $ref: '#/definitions/services.ConnectionStatusCounts'
+        type: object
+      mcp_status:
+        additionalProperties:
+          type: boolean
+        type: object
+      overall:
+        $ref: '#/definitions/services.ConnectionStatusCounts'
+      pending_sessions:
+        type: integer
+    type: object
+  services.ToolDefinition:
+    properties:
+      connection_id:
+        type: string
+      description:
+        type: string
+      display_name:
+        type: string
+      input_schema:
+        items:
+          type: integer
+        type: array
+      is_enabled:
+        type: boolean
+      metadata:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      tool_id:
+        type: string
+      toolkit_id:
+        type: string
+    type: object
+  services.ToolkitWithTools:
+    properties:
+      connection_id:
+        type: string
+      display_name:
+        type: string
+      logo:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      slug:
+        type: string
+      status:
+        $ref: '#/definitions/types.ConnectionStatus'
+      toolkit_id:
+        type: string
+      tools:
+        items:
+          $ref: '#/definitions/services.ToolDefinition'
+        type: array
+      type:
+        $ref: '#/definitions/db.ConnectionType'
+    type: object
+  types.ConnectionStatus:
     enum:
-    - enabled
+    - pending
+    - active
     - connected
-    - disabled
+    - disconnected
     - error
     type: string
     x-enum-varnames:
-    - ToolkitStatusEnabled
-    - ToolkitStatusConnected
-    - ToolkitStatusDisabled
-    - ToolkitStatusError
+    - ConnectionStatusPending
+    - ConnectionStatusActive
+    - ConnectionStatusConnected
+    - ConnectionStatusDisconnected
+    - ConnectionStatusError
 host: localhost:8000
 info:
   contact:
@@ -1038,6 +1117,244 @@ paths:
       summary: Stream chat with agent builder
       tags:
       - chat
+  /agents/{agent_id}/connections:
+    get:
+      description: List connections visible to the agent with team status and agent
+        enablement metadata
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_services_AgentConnection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List agent connections
+      tags:
+      - agent-connections
+  /agents/{agent_id}/connections/{connection_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update agent-level connection enablement and allowed tool IDs
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Agent connection update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.agentConnectionUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_AgentConnection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update agent connection
+      tags:
+      - agent-connections
+  /agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/disable:
+    post:
+      description: Disable a specific tool for the agent within a connection
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Tool UUID
+        in: path
+        name: tool_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_AgentConnection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Disable agent tool
+      tags:
+      - agent-connections
+  /agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/enable:
+    post:
+      description: Enable a specific tool for the agent within a connection
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Tool UUID
+        in: path
+        name: tool_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_AgentConnection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Enable agent tool
+      tags:
+      - agent-connections
   /agents/{agent_id}/messages:
     delete:
       consumes:
@@ -1697,91 +2014,12 @@ paths:
       summary: List all agent runs for the current team
       tags:
       - agent-runs
-  /composio/connect-link:
-    post:
-      consumes:
-      - application/json
-      description: Generate a hosted authentication link for a specific Composio toolkit
-      parameters:
-      - description: Connect link request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.composioConnectLinkRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-services_ConnectLinkResult'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create Composio connect link
-      tags:
-      - composio
-  /composio/connect/callback:
-    post:
-      consumes:
-      - application/json
-      description: Finalise a toolkit connection after the Composio hosted auth flow
-      parameters:
-      - description: Connect callback payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.composioConnectCallbackRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-services_SyncResult'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Complete Composio connect callback
-      tags:
-      - composio
-  /composio/connected-accounts:
+  /connections:
     get:
-      description: List connected Composio accounts for the authenticated team
+      description: Return all connections configured for the current team across Composio
+        and MCP providers
       parameters:
-      - description: Team UUID
+      - description: Team UUID override
         in: query
         name: team_id
         type: string
@@ -1791,44 +2029,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_composioAccountsResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List Composio connected accounts
-      tags:
-      - composio
-  /composio/toolkits:
-    get:
-      description: List available Composio toolkits along with the team's connection
-        status
-      parameters:
-      - description: Team UUID
-        in: query
-        name: team_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_services_ToolkitState'
+            $ref: '#/definitions/handlers.SingleResponse-array_services_ConnectionSummary'
         "400":
           description: Bad Request
           schema:
@@ -1847,130 +2048,42 @@ paths:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: List Composio toolkits
+      summary: List team connections
       tags:
-      - composio
-  /composio/toolkits/disconnect:
+      - connections
     post:
       consumes:
       - application/json
-      description: Remove the connected account for a toolkit so it can be re-authorized
+      description: Provision a new connection for the current team (custom MCP, global
+        MCP, or Composio)
       parameters:
-      - description: Disconnect toolkit payload
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Connection request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.composioDisconnectRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-services_SyncResult'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "502":
-          description: Bad Gateway
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Disconnect Composio toolkit
-      tags:
-      - composio
-  /composio/tools/{toolkit_slug}:
-    get:
-      description: List all available tools for a specific Composio toolkit
-      parameters:
-      - description: Toolkit slug (e.g., 'github', 'gmail')
-        in: path
-        name: toolkit_slug
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_composio_ToolDefinition'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List tools for a toolkit
-      tags:
-      - composio
-  /mcp/servers:
-    get:
-      description: Return all MCP servers visible to the authenticated user, including
-        personal overrides and global catalog entries
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_handlers_McpServerResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List MCP servers for current user
-      tags:
-      - mcp
-    post:
-      consumes:
-      - application/json
-      description: Create a user-specific MCP server configuration
-      parameters:
-      - description: MCP server request
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateTeamMcpServerRequest'
+          $ref: '#/definitions/handlers.createConnectionRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+            $ref: '#/definitions/handlers.SingleResponse-handlers_createConnectionResponse'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "404":
@@ -1981,31 +2094,35 @@ paths:
           description: Conflict
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Create MCP server
+      summary: Create connection
       tags:
-      - mcp
-  /mcp/servers/{server_id}:
+      - connections
+  /connections/{connection_id}:
     delete:
-      description: Soft delete a user-specific MCP server configuration by UUID
+      description: Remove a connection and associated records for the current team
       parameters:
-      - description: MCP server UUID
+      - description: Connection UUID
         in: path
-        name: server_id
+        name: connection_id
         required: true
         type: string
-      produces:
-      - application/json
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.DeleteResponse'
+        "204":
+          description: No Content
         "400":
           description: Bad Request
           schema:
@@ -2014,27 +2131,34 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
+        "502":
+          description: Bad Gateway
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Delete MCP server
+      summary: Delete connection
       tags:
-      - mcp
+      - connections
     get:
-      description: Fetch an MCP server configuration by UUID, checking user-defined
-        entries first then global entries
+      description: Retrieve a specific connection for the current team
       parameters:
-      - description: MCP server UUID
+      - description: Connection UUID
         in: path
-        name: server_id
+        name: connection_id
         required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
         type: string
       produces:
       - application/json
@@ -2042,13 +2166,17 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+            $ref: '#/definitions/handlers.SingleResponse-services_ConnectionSummary'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "404":
@@ -2061,38 +2189,47 @@ paths:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Get MCP server
+      summary: Get connection
       tags:
-      - mcp
+      - connections
     patch:
       consumes:
       - application/json
-      description: Update a user-specific MCP server configuration by UUID
+      description: Update connection metadata, display name, enabled state, or provider
+        configuration
       parameters:
-      - description: MCP server UUID
+      - description: Connection UUID
         in: path
-        name: server_id
+        name: connection_id
         required: true
         type: string
-      - description: MCP server update
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Connection update
         in: body
-        name: body
+        name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.UpdateTeamMcpServerRequest'
+          $ref: '#/definitions/handlers.updateConnectionRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+            $ref: '#/definitions/handlers.SingleResponse-services_ConnectionSummary'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "404":
@@ -2103,44 +2240,57 @@ paths:
           description: Conflict
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Update MCP server
+      summary: Update connection
       tags:
-      - mcp
-    put:
+      - connections
+  /connections/{connection_id}/composio/callback:
+    post:
       consumes:
       - application/json
-      description: Update a user-specific MCP server configuration by UUID
+      description: Finalise a Composio connection using callback payload without requiring
+        a session record
       parameters:
-      - description: MCP server UUID
+      - description: Connection UUID
         in: path
-        name: server_id
+        name: connection_id
         required: true
         type: string
-      - description: MCP server update
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Composio callback payload
         in: body
-        name: body
-        required: true
+        name: request
         schema:
-          $ref: '#/definitions/handlers.UpdateTeamMcpServerRequest'
+          $ref: '#/definitions/handlers.completeComposioCallbackRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_McpServerResponse'
+            $ref: '#/definitions/handlers.SingleResponse-handlers_createConnectionResponse'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "404":
@@ -2151,27 +2301,162 @@ paths:
           description: Conflict
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Update MCP server
+      summary: Complete Composio connection callback
       tags:
-      - mcp
-  /mcp/servers/catalog:
-    get:
-      description: Return MCP servers that were provisioned globally via configuration
+      - connections
+  /connections/{connection_id}/connect:
+    post:
+      consumes:
+      - application/json
+      description: Trigger provider-specific auth or provisioning flow for a connection
+      parameters:
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Connect request
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/handlers.connectConnectionRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_handlers_McpServerResponse'
+            $ref: '#/definitions/handlers.SingleResponse-handlers_createConnectionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Connect connection
+      tags:
+      - connections
+  /connections/{connection_id}/disconnect:
+    post:
+      description: Tear down provider sessions and mark the connection inactive
+      parameters:
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_createConnectionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Disconnect connection
+      tags:
+      - connections
+  /connections/{connection_id}/toolkits:
+    get:
+      description: Return toolkits and tools for a specific connection
+      parameters:
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_services_ToolkitWithTools'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
         "500":
@@ -2180,9 +2465,82 @@ paths:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: List global MCP servers
+      summary: List connection toolkits
       tags:
-      - mcp
+      - connections
+  /connections/status:
+    get:
+      description: Return aggregate connection metrics for the current team
+      parameters:
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_ConnectionsStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get connections status summary
+      tags:
+      - connections
+  /connections/toolkits:
+    get:
+      description: Aggregate toolkit catalog across all connections for the current
+        team
+      parameters:
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_services_ToolkitWithTools'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List team toolkits
+      tags:
+      - connections
   /users/me:
     get:
       consumes:

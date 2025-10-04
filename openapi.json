@@ -613,6 +613,369 @@
                 }
             }
         },
+        "/agents/{agent_id}/connections": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List connections visible to the agent with team status and agent enablement metadata",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-connections"
+                ],
+                "summary": "List agent connections",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-array_services_AgentConnection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agents/{agent_id}/connections/{connection_id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update agent-level connection enablement and allowed tool IDs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-connections"
+                ],
+                "summary": "Update agent connection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Agent connection update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.agentConnectionUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-services_AgentConnection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/disable": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Disable a specific tool for the agent within a connection",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-connections"
+                ],
+                "summary": "Disable agent tool",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tool UUID",
+                        "name": "tool_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-services_AgentConnection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/enable": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Enable a specific tool for the agent within a connection",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-connections"
+                ],
+                "summary": "Enable agent tool",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tool UUID",
+                        "name": "tool_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-services_AgentConnection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/agents/{agent_id}/messages": {
             "get": {
                 "security": [
@@ -1559,151 +1922,25 @@
                 }
             }
         },
-        "/composio/connect-link": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Generate a hosted authentication link for a specific Composio toolkit",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "Create Composio connect link",
-                "parameters": [
-                    {
-                        "description": "Connect link request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.composioConnectLinkRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-services_ConnectLinkResult"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/connect/callback": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Finalise a toolkit connection after the Composio hosted auth flow",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "Complete Composio connect callback",
-                "parameters": [
-                    {
-                        "description": "Connect callback payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.composioConnectCallbackRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-services_SyncResult"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/connected-accounts": {
+        "/connections": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "List connected Composio accounts for the authenticated team",
+                "description": "Return all connections configured for the current team across Composio and MCP providers",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "composio"
+                    "connections"
                 ],
-                "summary": "List Composio connected accounts",
+                "summary": "List team connections",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Team UUID",
+                        "description": "Team UUID override",
                         "name": "team_id",
                         "in": "query"
                     }
@@ -1712,7 +1949,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_composioAccountsResponse"
+                            "$ref": "#/definitions/handlers.SingleResponse-array_services_ConnectionSummary"
                         }
                     },
                     "400": {
@@ -1729,215 +1966,6 @@
                     },
                     "403": {
                         "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/toolkits": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "List available Composio toolkits along with the team's connection status",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "List Composio toolkits",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team UUID",
-                        "name": "team_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-array_services_ToolkitState"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/toolkits/disconnect": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Remove the connected account for a toolkit so it can be re-authorized",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "Disconnect Composio toolkit",
-                "parameters": [
-                    {
-                        "description": "Disconnect toolkit payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.composioDisconnectRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-services_SyncResult"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/composio/tools/{toolkit_slug}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "List all available tools for a specific Composio toolkit",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "composio"
-                ],
-                "summary": "List tools for a toolkit",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Toolkit slug (e.g., 'github', 'gmail')",
-                        "name": "toolkit_slug",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-array_composio_ToolDefinition"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/mcp/servers": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Return all MCP servers visible to the authenticated user, including personal overrides and global catalog entries",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "mcp"
-                ],
-                "summary": "List MCP servers for current user",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-array_handlers_McpServerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -1956,7 +1984,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a user-specific MCP server configuration",
+                "description": "Provision a new connection for the current team (custom MCP, global MCP, or Composio)",
                 "consumes": [
                     "application/json"
                 ],
@@ -1964,17 +1992,23 @@
                     "application/json"
                 ],
                 "tags": [
-                    "mcp"
+                    "connections"
                 ],
-                "summary": "Create MCP server",
+                "summary": "Create connection",
                 "parameters": [
                     {
-                        "description": "MCP server request",
-                        "name": "body",
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Connection request",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateTeamMcpServerRequest"
+                            "$ref": "#/definitions/handlers.createConnectionRequest"
                         }
                     }
                 ],
@@ -1982,7 +2016,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_McpServerResponse"
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_createConnectionResponse"
                         }
                     },
                     "400": {
@@ -1993,6 +2027,12 @@
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2009,8 +2049,14 @@
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2018,72 +2064,34 @@
                 }
             }
         },
-        "/mcp/servers/catalog": {
+        "/connections/status": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Return MCP servers that were provisioned globally via configuration",
+                "description": "Return aggregate connection metrics for the current team",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "mcp"
+                    "connections"
                 ],
-                "summary": "List global MCP servers",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-array_handlers_McpServerResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/mcp/servers/{server_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Fetch an MCP server configuration by UUID, checking user-defined entries first then global entries",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "mcp"
-                ],
-                "summary": "Get MCP server",
+                "summary": "Get connections status summary",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "MCP server UUID",
-                        "name": "server_id",
-                        "in": "path",
-                        "required": true
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_McpServerResponse"
+                            "$ref": "#/definitions/handlers.SingleResponse-services_ConnectionsStatus"
                         }
                     },
                     "400": {
@@ -2098,8 +2106,8 @@
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2111,47 +2119,36 @@
                         }
                     }
                 }
-            },
-            "put": {
+            }
+        },
+        "/connections/toolkits": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update a user-specific MCP server configuration by UUID",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Aggregate toolkit catalog across all connections for the current team",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "mcp"
+                    "connections"
                 ],
-                "summary": "Update MCP server",
+                "summary": "List team toolkits",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "MCP server UUID",
-                        "name": "server_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "MCP server update",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.UpdateTeamMcpServerRequest"
-                        }
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_McpServerResponse"
+                            "$ref": "#/definitions/handlers.SingleResponse-array_services_ToolkitWithTools"
                         }
                     },
                     "400": {
@@ -2166,14 +2163,78 @@
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
-                    "409": {
-                        "description": "Conflict",
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/connections/{connection_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a specific connection for the current team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "Get connection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-services_ConnectionSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2192,29 +2253,29 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Soft delete a user-specific MCP server configuration by UUID",
-                "produces": [
-                    "application/json"
-                ],
+                "description": "Remove a connection and associated records for the current team",
                 "tags": [
-                    "mcp"
+                    "connections"
                 ],
-                "summary": "Delete MCP server",
+                "summary": "Delete connection",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "MCP server UUID",
-                        "name": "server_id",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.DeleteResponse"
-                        }
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -2228,14 +2289,20 @@
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "502": {
+                        "description": "Bad Gateway",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2248,7 +2315,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update a user-specific MCP server configuration by UUID",
+                "description": "Update connection metadata, display name, enabled state, or provider configuration",
                 "consumes": [
                     "application/json"
                 ],
@@ -2256,24 +2323,30 @@
                     "application/json"
                 ],
                 "tags": [
-                    "mcp"
+                    "connections"
                 ],
-                "summary": "Update MCP server",
+                "summary": "Update connection",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "MCP server UUID",
-                        "name": "server_id",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "MCP server update",
-                        "name": "body",
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Connection update",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateTeamMcpServerRequest"
+                            "$ref": "#/definitions/handlers.updateConnectionRequest"
                         }
                     }
                 ],
@@ -2281,7 +2354,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-handlers_McpServerResponse"
+                            "$ref": "#/definitions/handlers.SingleResponse-services_ConnectionSummary"
                         }
                     },
                     "400": {
@@ -2296,6 +2369,12 @@
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -2304,6 +2383,344 @@
                     },
                     "409": {
                         "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/connections/{connection_id}/composio/callback": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Finalise a Composio connection using callback payload without requiring a session record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "Complete Composio connection callback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Composio callback payload",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.completeComposioCallbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_createConnectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/connections/{connection_id}/connect": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Trigger provider-specific auth or provisioning flow for a connection",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "Connect connection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Connect request",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.connectConnectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_createConnectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/connections/{connection_id}/disconnect": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Tear down provider sessions and mark the connection inactive",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "Disconnect connection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-handlers_createConnectionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/connections/{connection_id}/toolkits": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Return toolkits and tools for a specific connection",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "List connection toolkits",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-array_services_ToolkitWithTools"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
                         }
@@ -2490,53 +2907,6 @@
         }
     },
     "definitions": {
-        "composio.AuthType": {
-            "type": "string",
-            "enum": [
-                "none",
-                "oauth",
-                "api_key"
-            ],
-            "x-enum-varnames": [
-                "AuthTypeNone",
-                "AuthTypeOAuth",
-                "AuthTypeAPIKey"
-            ]
-        },
-        "composio.ConnectedAccount": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "toolkit": {
-                    "$ref": "#/definitions/composio.ConnectedToolkit"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "composio.ConnectedToolkit": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
         "composio.ToolDefinition": {
             "type": "object",
             "properties": {
@@ -2570,6 +2940,19 @@
                     "type": "string"
                 }
             }
+        },
+        "db.ConnectionType": {
+            "type": "string",
+            "enum": [
+                "composio",
+                "global-mcp",
+                "custom-mcp"
+            ],
+            "x-enum-varnames": [
+                "ConnectionTypeComposio",
+                "ConnectionTypeGlobalMcp",
+                "ConnectionTypeCustomMcp"
+            ]
         },
         "handlers.AgentResponse": {
             "type": "object",
@@ -2775,58 +3158,6 @@
                 }
             }
         },
-        "handlers.CreateTeamMcpServerRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "server_id",
-                "url"
-            ],
-            "properties": {
-                "auth": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "global_server_id": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "name": {
-                    "type": "string"
-                },
-                "options": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "server_id": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "transport": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
         "handlers.CreateWebhookTokenRequest": {
             "type": "object",
             "required": [
@@ -2853,65 +3184,6 @@
             "type": "object",
             "properties": {
                 "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.McpServerResponse": {
-            "type": "object",
-            "properties": {
-                "auth": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "category": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "linked_global_id": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "name": {
-                    "type": "string"
-                },
-                "options": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "server_id": {
-                    "type": "string"
-                },
-                "source": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "transport": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "url": {
                     "type": "string"
                 }
             }
@@ -3141,35 +3413,35 @@
                 }
             }
         },
-        "handlers.SingleResponse-array_composio_ToolDefinition": {
+        "handlers.SingleResponse-array_services_AgentConnection": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/composio.ToolDefinition"
+                        "$ref": "#/definitions/services.AgentConnection"
                     }
                 }
             }
         },
-        "handlers.SingleResponse-array_handlers_McpServerResponse": {
+        "handlers.SingleResponse-array_services_ConnectionSummary": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.McpServerResponse"
+                        "$ref": "#/definitions/services.ConnectionSummary"
                     }
                 }
             }
         },
-        "handlers.SingleResponse-array_services_ToolkitState": {
+        "handlers.SingleResponse-array_services_ToolkitWithTools": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/services.ToolkitState"
+                        "$ref": "#/definitions/services.ToolkitWithTools"
                     }
                 }
             }
@@ -3206,14 +3478,6 @@
                 }
             }
         },
-        "handlers.SingleResponse-handlers_McpServerResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.McpServerResponse"
-                }
-            }
-        },
         "handlers.SingleResponse-handlers_MeResponse": {
             "type": "object",
             "properties": {
@@ -3238,27 +3502,35 @@
                 }
             }
         },
-        "handlers.SingleResponse-handlers_composioAccountsResponse": {
+        "handlers.SingleResponse-handlers_createConnectionResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/handlers.composioAccountsResponse"
+                    "$ref": "#/definitions/handlers.createConnectionResponse"
                 }
             }
         },
-        "handlers.SingleResponse-services_ConnectLinkResult": {
+        "handlers.SingleResponse-services_AgentConnection": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/services.ConnectLinkResult"
+                    "$ref": "#/definitions/services.AgentConnection"
                 }
             }
         },
-        "handlers.SingleResponse-services_SyncResult": {
+        "handlers.SingleResponse-services_ConnectionSummary": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/services.SyncResult"
+                    "$ref": "#/definitions/services.ConnectionSummary"
+                }
+            }
+        },
+        "handlers.SingleResponse-services_ConnectionsStatus": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/services.ConnectionsStatus"
                 }
             }
         },
@@ -3315,47 +3587,6 @@
                 }
             }
         },
-        "handlers.UpdateTeamMcpServerRequest": {
-            "type": "object",
-            "properties": {
-                "auth": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "name": {
-                    "type": "string"
-                },
-                "options": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "transport": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
         "handlers.WebhookTokenResponse": {
             "type": "object",
             "properties": {
@@ -3385,144 +3616,448 @@
                 }
             }
         },
-        "handlers.composioAccountsResponse": {
+        "handlers.agentConnectionUpdateRequest": {
             "type": "object",
             "properties": {
-                "accounts": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "enabled_tool_ids": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/composio.ConnectedAccount"
+                        "type": "string"
                     }
                 }
             }
         },
-        "handlers.composioConnectCallbackRequest": {
+        "handlers.completeComposioCallbackRequest": {
             "type": "object",
             "properties": {
                 "connected_account_id": {
                     "type": "string"
                 },
-                "team_id": {
+                "message": {
                     "type": "string"
                 },
-                "toolkit": {
+                "provider_payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "provider_status": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 }
             }
         },
-        "handlers.composioConnectLinkRequest": {
+        "handlers.connectConnectionRequest": {
             "type": "object",
             "properties": {
                 "callback_url": {
                     "type": "string"
-                },
-                "team_id": {
-                    "type": "string"
-                },
-                "toolkit": {
-                    "type": "string"
                 }
             }
         },
-        "handlers.composioDisconnectRequest": {
+        "handlers.createConnectionRequest": {
             "type": "object",
+            "required": [
+                "type"
+            ],
             "properties": {
-                "team_id": {
+                "auth": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "callback_url": {
                     "type": "string"
                 },
-                "toolkit": {
-                    "type": "string"
-                }
-            }
-        },
-        "services.ConnectLinkResult": {
-            "type": "object",
-            "properties": {
-                "connected_account_id": {
+                "category": {
                     "type": "string"
                 },
-                "redirect_url": {
+                "display_name": {
                     "type": "string"
                 },
-                "toolkit": {
-                    "type": "string"
-                }
-            }
-        },
-        "services.SyncResult": {
-            "type": "object",
-            "properties": {
-                "needs_connection": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "enabled": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "options": {
+                    "type": "object",
+                    "additionalProperties": {}
                 },
                 "server_id": {
                     "type": "string"
                 },
-                "toolkits_applied": {
+                "tags": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "template_id": {
+                    "type": "string"
+                },
+                "toolkit_slug": {
+                    "type": "string"
+                },
+                "transport": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },
-        "services.ToolkitState": {
+        "handlers.createConnectionResponse": {
             "type": "object",
             "properties": {
-                "allowed_tools": {
+                "connection": {
+                    "$ref": "#/definitions/services.ConnectionSummary"
+                },
+                "session": {
+                    "$ref": "#/definitions/services.ConnectionSession"
+                }
+            }
+        },
+        "handlers.updateConnectionRequest": {
+            "type": "object",
+            "properties": {
+                "auth": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "options": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "transport": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.AgentConnection": {
+            "type": "object",
+            "properties": {
+                "agent_enabled": {
+                    "type": "boolean"
+                },
+                "connection_id": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "enabled_tool_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "auth_type": {
-                    "$ref": "#/definitions/composio.AuthType"
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
                 },
-                "connected_account_id": {
+                "slug": {
                     "type": "string"
                 },
+                "team_enabled": {
+                    "type": "boolean"
+                },
+                "team_status": {
+                    "$ref": "#/definitions/types.ConnectionStatus"
+                },
+                "toolkits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/services.AgentConnectionToolkit"
+                    }
+                },
+                "type": {
+                    "$ref": "#/definitions/db.ConnectionType"
+                }
+            }
+        },
+        "services.AgentConnectionTool": {
+            "type": "object",
+            "properties": {
                 "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "input_schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tool_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.AgentConnectionToolkit": {
+            "type": "object",
+            "properties": {
+                "display_name": {
                     "type": "string"
                 },
                 "logo": {
                     "type": "string"
                 },
-                "name": {
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "slug": {
                     "type": "string"
                 },
-                "needs_connection": {
-                    "type": "boolean"
-                },
-                "pending_connected_account_id": {
+                "toolkit_id": {
                     "type": "string"
                 },
-                "requires_auth": {
+                "tools": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/services.AgentConnectionTool"
+                    }
+                }
+            }
+        },
+        "services.ConnectionSession": {
+            "type": "object",
+            "properties": {
+                "provider_payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "redirect_url": {
+                    "type": "string"
+                },
+                "session_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.ConnectionStatusCounts": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "integer"
+                },
+                "connected": {
+                    "type": "integer"
+                },
+                "disconnected": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "integer"
+                },
+                "pending": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "services.ConnectionSummary": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "enabled": {
                     "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
                 },
                 "slug": {
                     "type": "string"
                 },
                 "status": {
-                    "$ref": "#/definitions/types.ToolkitStatus"
+                    "$ref": "#/definitions/types.ConnectionStatus"
+                },
+                "template_id": {
+                    "type": "string"
+                },
+                "tool_count": {
+                    "type": "integer"
+                },
+                "transport": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/db.ConnectionType"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },
-        "types.ToolkitStatus": {
+        "services.ConnectionsStatus": {
+            "type": "object",
+            "properties": {
+                "by_type": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/services.ConnectionStatusCounts"
+                    }
+                },
+                "mcp_status": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
+                },
+                "overall": {
+                    "$ref": "#/definitions/services.ConnectionStatusCounts"
+                },
+                "pending_sessions": {
+                    "type": "integer"
+                }
+            }
+        },
+        "services.ToolDefinition": {
+            "type": "object",
+            "properties": {
+                "connection_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "input_schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "is_enabled": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tool_id": {
+                    "type": "string"
+                },
+                "toolkit_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.ToolkitWithTools": {
+            "type": "object",
+            "properties": {
+                "connection_id": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/types.ConnectionStatus"
+                },
+                "toolkit_id": {
+                    "type": "string"
+                },
+                "tools": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/services.ToolDefinition"
+                    }
+                },
+                "type": {
+                    "$ref": "#/definitions/db.ConnectionType"
+                }
+            }
+        },
+        "types.ConnectionStatus": {
             "type": "string",
             "enum": [
-                "enabled",
+                "pending",
+                "active",
                 "connected",
-                "disabled",
+                "disconnected",
                 "error"
             ],
             "x-enum-varnames": [
-                "ToolkitStatusEnabled",
-                "ToolkitStatusConnected",
-                "ToolkitStatusDisabled",
-                "ToolkitStatusError"
+                "ConnectionStatusPending",
+                "ConnectionStatusActive",
+                "ConnectionStatusConnected",
+                "ConnectionStatusDisconnected",
+                "ConnectionStatusError"
             ]
         }
     },
