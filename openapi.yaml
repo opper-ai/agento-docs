@@ -185,6 +185,20 @@ definitions:
       error:
         type: string
     type: object
+  handlers.ExecuteAgentRunRequest:
+    properties:
+      input:
+        type: string
+      metadata: {}
+      model:
+        type: string
+      tool_calls:
+        items:
+          $ref: '#/definitions/handlers.RunAgentToolCall'
+        type: array
+    required:
+    - input
+    type: object
   handlers.MeResponse:
     properties:
       auth0_id:
@@ -1504,6 +1518,56 @@ paths:
       summary: Create agent chat message entry
       tags:
       - chat
+  /agents/{agent_id}/run:
+    post:
+      consumes:
+      - application/json
+      description: Trigger an agent run for a specific agent without going through
+        chat
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Agent execution data
+        in: body
+        name: run
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ExecuteAgentRunRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentRunResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Execute agent run
+      tags:
+      - agent-runs
   /agents/{agent_id}/runs:
     get:
       consumes:
