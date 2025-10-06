@@ -3276,12 +3276,6 @@
                 "metadata": {},
                 "model": {
                     "type": "string"
-                },
-                "tool_calls": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.RunAgentToolCall"
-                    }
                 }
             }
         },
@@ -3482,30 +3476,6 @@
                 },
                 "metadata": {},
                 "model": {
-                    "type": "string"
-                },
-                "tool_calls": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.RunAgentToolCall"
-                    }
-                }
-            }
-        },
-        "handlers.RunAgentToolCall": {
-            "type": "object",
-            "properties": {
-                "alias": {
-                    "type": "string"
-                },
-                "arguments": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "server_id": {
-                    "type": "string"
-                },
-                "tool_name": {
                     "type": "string"
                 }
             }

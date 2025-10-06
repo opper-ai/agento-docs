@@ -192,10 +192,6 @@ definitions:
       metadata: {}
       model:
         type: string
-      tool_calls:
-        items:
-          $ref: '#/definitions/handlers.RunAgentToolCall'
-        type: array
     required:
     - input
     type: object
@@ -330,22 +326,6 @@ definitions:
         type: string
       metadata: {}
       model:
-        type: string
-      tool_calls:
-        items:
-          $ref: '#/definitions/handlers.RunAgentToolCall'
-        type: array
-    type: object
-  handlers.RunAgentToolCall:
-    properties:
-      alias:
-        type: string
-      arguments:
-        additionalProperties: true
-        type: object
-      server_id:
-        type: string
-      tool_name:
         type: string
     type: object
   handlers.SingleResponse-array_services_AgentConnection:
