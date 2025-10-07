@@ -320,14 +320,6 @@ definitions:
         example: 10
         type: integer
     type: object
-  handlers.RunAgentRequest:
-    properties:
-      input:
-        type: string
-      metadata: {}
-      model:
-        type: string
-    type: object
   handlers.SingleResponse-array_services_AgentConnection:
     properties:
       data:
@@ -1595,50 +1587,6 @@ paths:
       security:
       - BearerAuth: []
       summary: List agent runs
-      tags:
-      - agent-runs
-    post:
-      consumes:
-      - application/json
-      description: Execute an agent with the provided input
-      parameters:
-      - description: Agent ID
-        in: path
-        name: agent_id
-        required: true
-        type: string
-      - description: Agent run data
-        in: body
-        name: run
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.RunAgentRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentRunResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Run agent
       tags:
       - agent-runs
   /agents/{agent_id}/runs/{run_id}:
