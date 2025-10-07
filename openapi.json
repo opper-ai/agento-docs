@@ -3246,6 +3246,22 @@
                 "action": {
                     "$ref": "#/definitions/handlers.MessagePartAction"
                 },
+                "actionLabel": {
+                    "type": "string"
+                },
+                "confidence": {
+                    "type": "number"
+                },
+                "cycleKey": {
+                    "type": "string"
+                },
+                "scratchpad": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "step": {
+                    "type": "integer"
+                },
                 "text": {
                     "type": "string"
                 },
@@ -3287,10 +3303,21 @@
         "handlers.MessagePartToolResult": {
             "type": "object",
             "properties": {
+                "data": {},
                 "error": {
                     "type": "string"
                 },
-                "result": {}
+                "executionTimeMs": {
+                    "type": "integer"
+                },
+                "response": {},
+                "result": {},
+                "success": {
+                    "type": "boolean"
+                },
+                "toolName": {
+                    "type": "string"
+                }
             }
         },
         "handlers.MessageResponse": {

@@ -218,6 +218,17 @@ definitions:
     properties:
       action:
         $ref: '#/definitions/handlers.MessagePartAction'
+      actionLabel:
+        type: string
+      confidence:
+        type: number
+      cycleKey:
+        type: string
+      scratchpad:
+        additionalProperties: {}
+        type: object
+      step:
+        type: integer
       text:
         type: string
       toolCall:
@@ -245,9 +256,17 @@ definitions:
     type: object
   handlers.MessagePartToolResult:
     properties:
+      data: {}
       error:
         type: string
+      executionTimeMs:
+        type: integer
+      response: {}
       result: {}
+      success:
+        type: boolean
+      toolName:
+        type: string
     type: object
   handlers.MessageResponse:
     properties:
