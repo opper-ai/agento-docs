@@ -149,6 +149,9 @@ definitions:
     properties:
       error:
         type: string
+      error_type:
+        description: Optional error type for frontend classification
+        type: string
     type: object
   handlers.ExecuteAgentRunRequest:
     properties:
