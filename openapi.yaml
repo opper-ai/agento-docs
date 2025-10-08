@@ -1,27 +1,5 @@
 basePath: /v1
 definitions:
-  composio.ToolDefinition:
-    properties:
-      category:
-        type: string
-      description:
-        type: string
-      display_name:
-        type: string
-      name:
-        type: string
-      toolkit:
-        $ref: '#/definitions/composio.ToolkitInfo'
-    type: object
-  composio.ToolkitInfo:
-    properties:
-      logo:
-        type: string
-      name:
-        type: string
-      slug:
-        type: string
-    type: object
   db.ConnectionType:
     enum:
     - composio
@@ -84,19 +62,6 @@ definitions:
       updated_at:
         type: string
       usage: {}
-    type: object
-  handlers.AgentToolsResponse:
-    properties:
-      available_tools:
-        additionalProperties:
-          items:
-            $ref: '#/definitions/composio.ToolDefinition'
-          type: array
-        type: object
-      enabled_tools:
-        items:
-          type: string
-        type: array
     type: object
   handlers.Balance:
     properties:
@@ -353,13 +318,6 @@ definitions:
           $ref: '#/definitions/services.ConnectionSummary'
         type: array
     type: object
-  handlers.SingleResponse-array_services_ToolkitWithTools:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/services.ToolkitWithTools'
-        type: array
-    type: object
   handlers.SingleResponse-handlers_AgentResponse:
     properties:
       data:
@@ -369,11 +327,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/handlers.AgentRunResponse'
-    type: object
-  handlers.SingleResponse-handlers_AgentToolsResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.AgentToolsResponse'
     type: object
   handlers.SingleResponse-handlers_BuildAgentResponse:
     properties:
@@ -442,13 +395,6 @@ definitions:
       name:
         type: string
       user_preferences: {}
-    type: object
-  handlers.UpdateAgentToolsRequest:
-    properties:
-      enabled_tools:
-        items:
-          type: string
-        type: array
     type: object
   handlers.WebhookTokenResponse:
     properties:
@@ -585,9 +531,9 @@ definitions:
         type: boolean
       team_status:
         $ref: '#/definitions/types.ConnectionStatus'
-      toolkits:
+      tools:
         items:
-          $ref: '#/definitions/services.AgentConnectionToolkit'
+          $ref: '#/definitions/services.AgentConnectionTool'
         type: array
       type:
         $ref: '#/definitions/db.ConnectionType'
@@ -604,6 +550,9 @@ definitions:
         items:
           type: integer
         type: array
+      metadata:
+        additionalProperties: {}
+        type: object
       name:
         type: string
       tags:
@@ -612,24 +561,6 @@ definitions:
         type: array
       tool_id:
         type: string
-    type: object
-  services.AgentConnectionToolkit:
-    properties:
-      display_name:
-        type: string
-      logo:
-        type: string
-      metadata:
-        additionalProperties: {}
-        type: object
-      slug:
-        type: string
-      toolkit_id:
-        type: string
-      tools:
-        items:
-          $ref: '#/definitions/services.AgentConnectionTool'
-        type: array
     type: object
   services.ConnectionSession:
     properties:
@@ -660,15 +591,17 @@ definitions:
     properties:
       created_at:
         type: string
-      display_name:
-        type: string
       enabled:
         type: boolean
       id:
         type: string
+      logo:
+        type: string
       metadata:
         additionalProperties: {}
         type: object
+      name:
+        type: string
       slug:
         type: string
       status:
@@ -677,6 +610,10 @@ definitions:
         type: string
       tool_count:
         type: integer
+      tools:
+        items:
+          $ref: '#/definitions/services.ToolDefinition'
+        type: array
       transport:
         type: string
       type:
@@ -726,32 +663,6 @@ definitions:
         type: array
       tool_id:
         type: string
-      toolkit_id:
-        type: string
-    type: object
-  services.ToolkitWithTools:
-    properties:
-      connection_id:
-        type: string
-      display_name:
-        type: string
-      logo:
-        type: string
-      metadata:
-        additionalProperties: {}
-        type: object
-      slug:
-        type: string
-      status:
-        $ref: '#/definitions/types.ConnectionStatus'
-      toolkit_id:
-        type: string
-      tools:
-        items:
-          $ref: '#/definitions/services.ToolDefinition'
-        type: array
-      type:
-        $ref: '#/definitions/db.ConnectionType'
     type: object
   types.ConnectionStatus:
     enum:
@@ -1232,6 +1143,122 @@ paths:
       security:
       - BearerAuth: []
       summary: Update agent connection
+      tags:
+      - agent-connections
+  /agents/{agent_id}/connections/{connection_id}/disable:
+    post:
+      description: Disable the agent connection so no tools are available
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_AgentConnection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Disable agent connection
+      tags:
+      - agent-connections
+  /agents/{agent_id}/connections/{connection_id}/enable:
+    post:
+      description: Enable the agent connection so all tools become available
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_AgentConnection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Enable agent connection
       tags:
       - agent-connections
   /agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/disable:
@@ -1793,87 +1820,6 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
-  /agents/{agent_id}/tools:
-    get:
-      description: Get agent's enabled tools and available tools from connected toolkits
-      parameters:
-      - description: Agent UUID
-        in: path
-        name: agent_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentToolsResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get agent tools
-      tags:
-      - agents
-    patch:
-      consumes:
-      - application/json
-      description: Update which tools are enabled for this agent
-      parameters:
-      - description: Agent UUID
-        in: path
-        name: agent_id
-        required: true
-        type: string
-      - description: Tools update request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.UpdateAgentToolsRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-handlers_AgentResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Update agent tools
-      tags:
-      - agents
   /agents/{agent_id}/webhook-tokens:
     get:
       consumes:
@@ -2434,51 +2380,6 @@ paths:
       summary: Disconnect connection
       tags:
       - connections
-  /connections/{connection_id}/toolkits:
-    get:
-      description: Return toolkits and tools for a specific connection
-      parameters:
-      - description: Connection UUID
-        in: path
-        name: connection_id
-        required: true
-        type: string
-      - description: Team UUID override
-        in: query
-        name: team_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_services_ToolkitWithTools'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List connection toolkits
-      tags:
-      - connections
   /connections/status:
     get:
       description: Return aggregate connection metrics for the current team
@@ -2513,43 +2414,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Get connections status summary
-      tags:
-      - connections
-  /connections/toolkits:
-    get:
-      description: Aggregate toolkit catalog across all connections for the current
-        team
-      parameters:
-      - description: Team UUID override
-        in: query
-        name: team_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_services_ToolkitWithTools'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: List team toolkits
       tags:
       - connections
   /users/me:
