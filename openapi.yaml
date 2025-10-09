@@ -117,6 +117,21 @@ definitions:
     required:
     - name
     type: object
+  handlers.CreateJobRequest:
+    properties:
+      delay_seconds:
+        description: Either provide delay_seconds OR scheduled_for, not both
+        type: integer
+      input_data:
+        additionalProperties: true
+        type: object
+      metadata:
+        additionalProperties: true
+        type: object
+      scheduled_for:
+        description: Run at specific time
+        type: string
+    type: object
   handlers.CreateMessageRequest:
     properties:
       content:
@@ -130,6 +145,32 @@ definitions:
         type: string
     required:
     - type
+    type: object
+  handlers.CreateScheduleRequest:
+    properties:
+      cron_expression:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      end_date:
+        type: string
+      input_data:
+        additionalProperties: true
+        type: object
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      start_date:
+        type: string
+      timezone:
+        type: string
+    required:
+    - cron_expression
+    - name
     type: object
   handlers.CreateWebhookTokenRequest:
     properties:
@@ -283,6 +324,24 @@ definitions:
       meta:
         $ref: '#/definitions/handlers.PaginationMeta'
     type: object
+  handlers.Paginated-handlers_ScheduleResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.ScheduleResponse'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
+    type: object
+  handlers.Paginated-handlers_ScheduledRunResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.ScheduledRunResponse'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
+    type: object
   handlers.Paginated-handlers_WebhookTokenResponse:
     properties:
       data:
@@ -306,6 +365,79 @@ definitions:
       total_pages:
         example: 10
         type: integer
+    type: object
+  handlers.ScheduleDeleteResponse:
+    properties:
+      cancelled_runs:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  handlers.ScheduleResponse:
+    properties:
+      agent_id:
+        type: integer
+      created_at:
+        type: string
+      cron_expression:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      end_date:
+        type: string
+      id:
+        type: string
+      input_data:
+        additionalProperties: true
+        type: object
+      last_scheduled_at:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      next_run_at:
+        type: string
+      start_date:
+        type: string
+      timezone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  handlers.ScheduledRunResponse:
+    properties:
+      agent_id:
+        type: integer
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      error:
+        type: string
+      id:
+        type: string
+      input_data:
+        additionalProperties: true
+        type: object
+      metadata:
+        additionalProperties: true
+        type: object
+      run_type:
+        type: string
+      schedule_id:
+        type: integer
+      scheduled_for:
+        type: string
+      started_at:
+        type: string
+      status:
+        type: string
     type: object
   handlers.SingleResponse-array_services_AgentConnection:
     properties:
@@ -345,6 +477,16 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/handlers.MessageResponse'
+    type: object
+  handlers.SingleResponse-handlers_ScheduleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.ScheduleResponse'
+    type: object
+  handlers.SingleResponse-handlers_ScheduledRunResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.ScheduledRunResponse'
     type: object
   handlers.SingleResponse-handlers_WebhookTokenResponse:
     properties:
@@ -398,6 +540,29 @@ definitions:
       name:
         type: string
       user_preferences: {}
+    type: object
+  handlers.UpdateScheduleRequest:
+    properties:
+      cron_expression:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      end_date:
+        type: string
+      input_data:
+        additionalProperties: true
+        type: object
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      start_date:
+        type: string
+      timezone:
+        type: string
     type: object
   handlers.WebhookTokenResponse:
     properties:
@@ -1390,6 +1555,156 @@ paths:
       summary: Enable agent tool
       tags:
       - agent-connections
+  /agents/{agent_id}/jobs/{run_id}/cancel:
+    delete:
+      consumes:
+      - application/json
+      description: Cancel a pending scheduled run
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Run UUID
+        in: path
+        name: run_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Cancel a scheduled run
+      tags:
+      - schedules
+  /agents/{agent_id}/jobs/schedule:
+    post:
+      consumes:
+      - application/json
+      description: Schedule a single agent execution either with a delay or at a specific
+        time
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Job scheduling configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateJobRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_ScheduledRunResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a one-off scheduled job
+      tags:
+      - schedules
+  /agents/{agent_id}/jobs/upcoming:
+    get:
+      consumes:
+      - application/json
+      description: Get all pending scheduled runs for an agent
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - default: 20
+        description: Maximum number of runs to return
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-handlers_ScheduledRunResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List upcoming scheduled runs
+      tags:
+      - schedules
   /agents/{agent_id}/messages:
     delete:
       consumes:
@@ -1823,6 +2138,259 @@ paths:
       summary: Update agent run
       tags:
       - agent-runs
+  /agents/{agent_id}/schedules:
+    get:
+      consumes:
+      - application/json
+      description: Get all cron schedules configured for a specific agent
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-handlers_ScheduleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all schedules for an agent
+      tags:
+      - schedules
+    post:
+      consumes:
+      - application/json
+      description: Create a new cron schedule for automated agent execution
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Schedule configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_ScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new schedule for an agent
+      tags:
+      - schedules
+  /agents/{agent_id}/schedules/{schedule_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a schedule and cancel all pending runs
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Schedule UUID
+        in: path
+        name: schedule_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ScheduleDeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a schedule
+      tags:
+      - schedules
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific schedule
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Schedule UUID
+        in: path
+        name: schedule_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_ScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a schedule by ID
+      tags:
+      - schedules
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing schedule configuration
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Schedule UUID
+        in: path
+        name: schedule_id
+        required: true
+        type: string
+      - description: Updated schedule configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-handlers_ScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a schedule
+      tags:
+      - schedules
   /agents/{agent_id}/webhook-tokens:
     get:
       consumes:
