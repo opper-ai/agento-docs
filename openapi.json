@@ -2844,6 +2844,63 @@
                 }
             }
         },
+        "/connections/definitions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Return all available connection definitions (Composio, MCP) annotated with team connection status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "List available connection definitions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SingleResponse-array_services_ConnectionDefinitionWithStatus"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/connections/status": {
             "get": {
                 "security": [
@@ -4466,6 +4523,17 @@
                 }
             }
         },
+        "handlers.SingleResponse-array_services_ConnectionDefinitionWithStatus": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/services.ConnectionDefinitionWithStatus"
+                    }
+                }
+            }
+        },
         "handlers.SingleResponse-array_services_TeamConnection": {
             "type": "object",
             "properties": {
@@ -4885,6 +4953,53 @@
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.ConnectionDefinitionWithStatus": {
+            "type": "object",
+            "properties": {
+                "connection_enabled": {
+                    "type": "boolean"
+                },
+                "connection_id": {
+                    "type": "string"
+                },
+                "connection_status": {
+                    "type": "string"
+                },
+                "connection_type": {
+                    "$ref": "#/definitions/db.ConnectionType"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "has_connection": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "requires_auth": {
+                    "type": "boolean"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

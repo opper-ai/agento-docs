@@ -545,6 +545,13 @@ definitions:
           $ref: '#/definitions/services.AgentConnection'
         type: array
     type: object
+  handlers.SingleResponse-array_services_ConnectionDefinitionWithStatus:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/services.ConnectionDefinitionWithStatus'
+        type: array
+    type: object
   handlers.SingleResponse-array_services_TeamConnection:
     properties:
       data:
@@ -821,6 +828,37 @@ definitions:
       updated_at:
         type: string
       url:
+        type: string
+    type: object
+  services.ConnectionDefinitionWithStatus:
+    properties:
+      connection_enabled:
+        type: boolean
+      connection_id:
+        type: string
+      connection_status:
+        type: string
+      connection_type:
+        $ref: '#/definitions/db.ConnectionType'
+      created_at:
+        type: string
+      enabled:
+        type: boolean
+      has_connection:
+        type: boolean
+      logo:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      requires_auth:
+        type: boolean
+      slug:
+        type: string
+      updated_at:
         type: string
     type: object
   services.ConnectionSession:
@@ -3123,6 +3161,43 @@ paths:
       security:
       - BearerAuth: []
       summary: List connection tools
+      tags:
+      - connections
+  /connections/definitions:
+    get:
+      description: Return all available connection definitions (Composio, MCP) annotated
+        with team connection status
+      parameters:
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-array_services_ConnectionDefinitionWithStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List available connection definitions
       tags:
       - connections
   /connections/status:
