@@ -1,5 +1,86 @@
 basePath: /v1
 definitions:
+  connections.AgentToolSummary:
+    properties:
+      agent_enabled:
+        type: boolean
+      connection_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      enabled_at:
+        type: string
+      id:
+        type: string
+      input_schema:
+        additionalProperties: {}
+        type: object
+      logo:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      slug:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      team_enabled:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
+  connections.ConnectionStatusCounts:
+    properties:
+      active:
+        type: integer
+      connected:
+        type: integer
+      disconnected:
+        type: integer
+      error:
+        type: integer
+      pending:
+        type: integer
+      total:
+        type: integer
+    type: object
+  connections.ToolSummary:
+    properties:
+      connection_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      input_schema:
+        additionalProperties: {}
+        type: object
+      logo:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      slug:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      team_enabled:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
   db.ConnectionType:
     enum:
     - composio
@@ -297,6 +378,24 @@ definitions:
       timestamp:
         type: string
     type: object
+  handlers.Paginated-connections_AgentToolSummary:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/connections.AgentToolSummary'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
+    type: object
+  handlers.Paginated-connections_ToolSummary:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/connections.ToolSummary'
+        type: array
+      meta:
+        $ref: '#/definitions/handlers.PaginationMeta'
+    type: object
   handlers.Paginated-handlers_AgentResponse:
     properties:
       data:
@@ -446,11 +545,11 @@ definitions:
           $ref: '#/definitions/services.AgentConnection'
         type: array
     type: object
-  handlers.SingleResponse-array_services_ConnectionSummary:
+  handlers.SingleResponse-array_services_TeamConnection:
     properties:
       data:
         items:
-          $ref: '#/definitions/services.ConnectionSummary'
+          $ref: '#/definitions/services.TeamConnection'
         type: array
     type: object
   handlers.SingleResponse-handlers_AgentResponse:
@@ -503,15 +602,15 @@ definitions:
       data:
         $ref: '#/definitions/services.AgentConnection'
     type: object
-  handlers.SingleResponse-services_ConnectionSummary:
-    properties:
-      data:
-        $ref: '#/definitions/services.ConnectionSummary'
-    type: object
   handlers.SingleResponse-services_ConnectionsStatus:
     properties:
       data:
         $ref: '#/definitions/services.ConnectionsStatus'
+    type: object
+  handlers.SingleResponse-services_TeamConnection:
+    properties:
+      data:
+        $ref: '#/definitions/services.TeamConnection'
     type: object
   handlers.SuccessResponse:
     properties:
@@ -654,7 +753,7 @@ definitions:
   handlers.createConnectionResponse:
     properties:
       connection:
-        $ref: '#/definitions/services.ConnectionSummary'
+        $ref: '#/definitions/services.TeamConnection'
       session:
         $ref: '#/definitions/services.ConnectionSession'
     type: object
@@ -663,16 +762,22 @@ definitions:
       auth:
         additionalProperties: {}
         type: object
-      display_name:
+      logo:
         type: string
-      enabled:
-        type: boolean
       metadata:
         additionalProperties: {}
         type: object
+      name:
+        type: string
       options:
         additionalProperties: {}
         type: object
+      requires_auth:
+        type: boolean
+      team_enabled:
+        type: boolean
+      template_id:
+        type: string
       transport:
         type: string
       url:
@@ -682,52 +787,40 @@ definitions:
     properties:
       agent_enabled:
         type: boolean
-      connection_id:
-        type: string
-      display_name:
+      created_at:
         type: string
       enabled_tool_ids:
         items:
           type: string
         type: array
+      id:
+        type: string
+      logo:
+        type: string
       metadata:
         additionalProperties: {}
         type: object
+      name:
+        type: string
+      requires_auth:
+        type: boolean
       slug:
         type: string
       team_enabled:
         type: boolean
       team_status:
         $ref: '#/definitions/types.ConnectionStatus'
-      tools:
-        items:
-          $ref: '#/definitions/services.AgentConnectionTool'
-        type: array
+      template_id:
+        type: string
+      tool_count:
+        type: integer
+      transport:
+        type: string
       type:
         $ref: '#/definitions/db.ConnectionType'
-    type: object
-  services.AgentConnectionTool:
-    properties:
-      description:
+      updated_at:
         type: string
-      display_name:
-        type: string
-      enabled:
-        type: boolean
-      input_schema:
-        items:
-          type: integer
-        type: array
-      metadata:
-        additionalProperties: {}
-        type: object
-      name:
-        type: string
-      tags:
-        items:
-          type: string
-        type: array
-      tool_id:
+      url:
         type: string
     type: object
   services.ConnectionSession:
@@ -740,27 +833,25 @@ definitions:
       session_id:
         type: string
     type: object
-  services.ConnectionStatusCounts:
+  services.ConnectionsStatus:
     properties:
-      active:
-        type: integer
-      connected:
-        type: integer
-      disconnected:
-        type: integer
-      error:
-        type: integer
-      pending:
-        type: integer
-      total:
+      by_type:
+        additionalProperties:
+          $ref: '#/definitions/connections.ConnectionStatusCounts'
+        type: object
+      mcp_status:
+        additionalProperties:
+          type: boolean
+        type: object
+      overall:
+        $ref: '#/definitions/connections.ConnectionStatusCounts'
+      pending_sessions:
         type: integer
     type: object
-  services.ConnectionSummary:
+  services.TeamConnection:
     properties:
       created_at:
         type: string
-      enabled:
-        type: boolean
       id:
         type: string
       logo:
@@ -770,18 +861,18 @@ definitions:
         type: object
       name:
         type: string
+      requires_auth:
+        type: boolean
       slug:
         type: string
-      status:
+      team_enabled:
+        type: boolean
+      team_status:
         $ref: '#/definitions/types.ConnectionStatus'
       template_id:
         type: string
       tool_count:
         type: integer
-      tools:
-        items:
-          $ref: '#/definitions/services.ToolDefinition'
-        type: array
       transport:
         type: string
       type:
@@ -789,47 +880,6 @@ definitions:
       updated_at:
         type: string
       url:
-        type: string
-    type: object
-  services.ConnectionsStatus:
-    properties:
-      by_type:
-        additionalProperties:
-          $ref: '#/definitions/services.ConnectionStatusCounts'
-        type: object
-      mcp_status:
-        additionalProperties:
-          type: boolean
-        type: object
-      overall:
-        $ref: '#/definitions/services.ConnectionStatusCounts'
-      pending_sessions:
-        type: integer
-    type: object
-  services.ToolDefinition:
-    properties:
-      connection_id:
-        type: string
-      description:
-        type: string
-      display_name:
-        type: string
-      input_schema:
-        items:
-          type: integer
-        type: array
-      is_enabled:
-        type: boolean
-      metadata:
-        additionalProperties: {}
-        type: object
-      name:
-        type: string
-      tags:
-        items:
-          type: string
-        type: array
-      tool_id:
         type: string
     type: object
   types.ConnectionStatus:
@@ -1427,6 +1477,73 @@ paths:
       security:
       - BearerAuth: []
       summary: Enable agent connection
+      tags:
+      - agent-connections
+  /agents/{agent_id}/connections/{connection_id}/tools:
+    get:
+      description: Return the tool catalog for an agent connection, including agent
+        enablement state
+      parameters:
+      - description: Agent UUID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Page size (max 500)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - description: Case-insensitive search across slug/name
+        in: query
+        name: search
+        type: string
+      - description: Return only tools enabled for the agent
+        in: query
+        name: only_enabled
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-connections_AgentToolSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List agent connection tools
       tags:
       - agent-connections
   /agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/disable:
@@ -2557,7 +2674,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-array_services_ConnectionSummary'
+            $ref: '#/definitions/handlers.SingleResponse-array_services_TeamConnection'
         "400":
           description: Bad Request
           schema:
@@ -2694,7 +2811,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-services_ConnectionSummary'
+            $ref: '#/definitions/handlers.SingleResponse-services_TeamConnection'
         "400":
           description: Bad Request
           schema:
@@ -2747,7 +2864,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SingleResponse-services_ConnectionSummary'
+            $ref: '#/definitions/handlers.SingleResponse-services_TeamConnection'
         "400":
           description: Bad Request
           schema:
@@ -2949,6 +3066,63 @@ paths:
       security:
       - BearerAuth: []
       summary: Disconnect connection
+      tags:
+      - connections
+  /connections/{connection_id}/tools:
+    get:
+      description: Return the tool catalog for a specific team connection
+      parameters:
+      - description: Connection UUID
+        in: path
+        name: connection_id
+        required: true
+        type: string
+      - description: Team UUID override
+        in: query
+        name: team_id
+        type: string
+      - description: Page size (max 500)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - description: Case-insensitive search across slug/name
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Paginated-connections_ToolSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List connection tools
       tags:
       - connections
   /connections/status:

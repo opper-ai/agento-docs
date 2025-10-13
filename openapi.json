@@ -962,6 +962,107 @@
                 }
             }
         },
+        "/agents/{agent_id}/connections/{connection_id}/tools": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Return the tool catalog for an agent connection, including agent enablement state",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agent-connections"
+                ],
+                "summary": "List agent connection tools",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agent UUID",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (max 500)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case-insensitive search across slug/name",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Return only tools enabled for the agent",
+                        "name": "only_enabled",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Paginated-connections_AgentToolSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/agents/{agent_id}/connections/{connection_id}/tools/{tool_id}/disable": {
             "post": {
                 "security": [
@@ -2628,7 +2729,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-array_services_ConnectionSummary"
+                            "$ref": "#/definitions/handlers.SingleResponse-array_services_TeamConnection"
                         }
                     },
                     "400": {
@@ -2834,7 +2935,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-services_ConnectionSummary"
+                            "$ref": "#/definitions/handlers.SingleResponse-services_TeamConnection"
                         }
                     },
                     "400": {
@@ -2976,7 +3077,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SingleResponse-services_ConnectionSummary"
+                            "$ref": "#/definitions/handlers.SingleResponse-services_TeamConnection"
                         }
                     },
                     "400": {
@@ -3286,6 +3387,94 @@
                 }
             }
         },
+        "/connections/{connection_id}/tools": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Return the tool catalog for a specific team connection",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "connections"
+                ],
+                "summary": "List connection tools",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Connection UUID",
+                        "name": "connection_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team UUID override",
+                        "name": "team_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (max 500)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Case-insensitive search across slug/name",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Paginated-connections_ToolSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "security": [
@@ -3459,6 +3648,127 @@
         }
     },
     "definitions": {
+        "connections.AgentToolSummary": {
+            "type": "object",
+            "properties": {
+                "agent_enabled": {
+                    "type": "boolean"
+                },
+                "connection_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "enabled_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "input_schema": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "team_enabled": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "connections.ConnectionStatusCounts": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "integer"
+                },
+                "connected": {
+                    "type": "integer"
+                },
+                "disconnected": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "integer"
+                },
+                "pending": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "connections.ToolSummary": {
+            "type": "object",
+            "properties": {
+                "connection_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "input_schema": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "team_enabled": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "db.ConnectionType": {
             "type": "string",
             "enum": [
@@ -3903,6 +4213,34 @@
                 }
             }
         },
+        "handlers.Paginated-connections_AgentToolSummary": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/connections.AgentToolSummary"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/handlers.PaginationMeta"
+                }
+            }
+        },
+        "handlers.Paginated-connections_ToolSummary": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/connections.ToolSummary"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/handlers.PaginationMeta"
+                }
+            }
+        },
         "handlers.Paginated-handlers_AgentResponse": {
             "type": "object",
             "properties": {
@@ -4128,13 +4466,13 @@
                 }
             }
         },
-        "handlers.SingleResponse-array_services_ConnectionSummary": {
+        "handlers.SingleResponse-array_services_TeamConnection": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/services.ConnectionSummary"
+                        "$ref": "#/definitions/services.TeamConnection"
                     }
                 }
             }
@@ -4219,19 +4557,19 @@
                 }
             }
         },
-        "handlers.SingleResponse-services_ConnectionSummary": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/services.ConnectionSummary"
-                }
-            }
-        },
         "handlers.SingleResponse-services_ConnectionsStatus": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/services.ConnectionsStatus"
+                }
+            }
+        },
+        "handlers.SingleResponse-services_TeamConnection": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/services.TeamConnection"
                 }
             }
         },
@@ -4446,7 +4784,7 @@
             "type": "object",
             "properties": {
                 "connection": {
-                    "$ref": "#/definitions/services.ConnectionSummary"
+                    "$ref": "#/definitions/services.TeamConnection"
                 },
                 "session": {
                     "$ref": "#/definitions/services.ConnectionSession"
@@ -4460,19 +4798,28 @@
                     "type": "object",
                     "additionalProperties": {}
                 },
-                "display_name": {
+                "logo": {
                     "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
                 },
                 "metadata": {
                     "type": "object",
                     "additionalProperties": {}
                 },
+                "name": {
+                    "type": "string"
+                },
                 "options": {
                     "type": "object",
                     "additionalProperties": {}
+                },
+                "requires_auth": {
+                    "type": "boolean"
+                },
+                "team_enabled": {
+                    "type": "boolean"
+                },
+                "template_id": {
+                    "type": "string"
                 },
                 "transport": {
                     "type": "string"
@@ -4488,10 +4835,7 @@
                 "agent_enabled": {
                     "type": "boolean"
                 },
-                "connection_id": {
-                    "type": "string"
-                },
-                "display_name": {
+                "created_at": {
                     "type": "string"
                 },
                 "enabled_tool_ids": {
@@ -4500,9 +4844,21 @@
                         "type": "string"
                     }
                 },
+                "id": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
                 "metadata": {
                     "type": "object",
                     "additionalProperties": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "requires_auth": {
+                    "type": "boolean"
                 },
                 "slug": {
                     "type": "string"
@@ -4513,49 +4869,22 @@
                 "team_status": {
                     "$ref": "#/definitions/types.ConnectionStatus"
                 },
-                "tools": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/services.AgentConnectionTool"
-                    }
+                "template_id": {
+                    "type": "string"
+                },
+                "tool_count": {
+                    "type": "integer"
+                },
+                "transport": {
+                    "type": "string"
                 },
                 "type": {
                     "$ref": "#/definitions/db.ConnectionType"
-                }
-            }
-        },
-        "services.AgentConnectionTool": {
-            "type": "object",
-            "properties": {
-                "description": {
+                },
+                "updated_at": {
                     "type": "string"
                 },
-                "display_name": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "input_schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "name": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "tool_id": {
+                "url": {
                     "type": "string"
                 }
             }
@@ -4575,37 +4904,34 @@
                 }
             }
         },
-        "services.ConnectionStatusCounts": {
+        "services.ConnectionsStatus": {
             "type": "object",
             "properties": {
-                "active": {
-                    "type": "integer"
+                "by_type": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/connections.ConnectionStatusCounts"
+                    }
                 },
-                "connected": {
-                    "type": "integer"
+                "mcp_status": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
                 },
-                "disconnected": {
-                    "type": "integer"
+                "overall": {
+                    "$ref": "#/definitions/connections.ConnectionStatusCounts"
                 },
-                "error": {
-                    "type": "integer"
-                },
-                "pending": {
-                    "type": "integer"
-                },
-                "total": {
+                "pending_sessions": {
                     "type": "integer"
                 }
             }
         },
-        "services.ConnectionSummary": {
+        "services.TeamConnection": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"
@@ -4620,10 +4946,16 @@
                 "name": {
                     "type": "string"
                 },
+                "requires_auth": {
+                    "type": "boolean"
+                },
                 "slug": {
                     "type": "string"
                 },
-                "status": {
+                "team_enabled": {
+                    "type": "boolean"
+                },
+                "team_status": {
                     "$ref": "#/definitions/types.ConnectionStatus"
                 },
                 "template_id": {
@@ -4631,12 +4963,6 @@
                 },
                 "tool_count": {
                     "type": "integer"
-                },
-                "tools": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/services.ToolDefinition"
-                    }
                 },
                 "transport": {
                     "type": "string"
@@ -4648,68 +4974,6 @@
                     "type": "string"
                 },
                 "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "services.ConnectionsStatus": {
-            "type": "object",
-            "properties": {
-                "by_type": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/services.ConnectionStatusCounts"
-                    }
-                },
-                "mcp_status": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "boolean"
-                    }
-                },
-                "overall": {
-                    "$ref": "#/definitions/services.ConnectionStatusCounts"
-                },
-                "pending_sessions": {
-                    "type": "integer"
-                }
-            }
-        },
-        "services.ToolDefinition": {
-            "type": "object",
-            "properties": {
-                "connection_id": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "display_name": {
-                    "type": "string"
-                },
-                "input_schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "is_enabled": {
-                    "type": "boolean"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "name": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "tool_id": {
                     "type": "string"
                 }
             }
