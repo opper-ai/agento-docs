@@ -287,6 +287,16 @@ definitions:
     required:
     - input
     type: object
+  handlers.ImportAgentRequest:
+    properties:
+      project_id:
+        description: Optional - will use user's default project if not provided
+        type: integer
+      share_code:
+        type: string
+    required:
+    - share_code
+    type: object
   handlers.MeResponse:
     properties:
       auth0_id:
@@ -606,6 +616,11 @@ definitions:
       data:
         $ref: '#/definitions/handlers.createConnectionResponse'
     type: object
+  handlers.SingleResponse-map_string_bool:
+    properties:
+      data:
+        $ref: '#/definitions/map_string_bool'
+    type: object
   handlers.SingleResponse-services_AgentConnection:
     properties:
       data:
@@ -615,6 +630,21 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/services.ConnectionsStatus'
+    type: object
+  handlers.SingleResponse-services_ImportResult:
+    properties:
+      data:
+        $ref: '#/definitions/services.ImportResult'
+    type: object
+  handlers.SingleResponse-services_SharePreview:
+    properties:
+      data:
+        $ref: '#/definitions/services.SharePreview'
+    type: object
+  handlers.SingleResponse-services_ShareResponse:
+    properties:
+      data:
+        $ref: '#/definitions/services.ShareResponse'
     type: object
   handlers.SingleResponse-services_TeamConnection:
     properties:
@@ -792,6 +822,10 @@ definitions:
       url:
         type: string
     type: object
+  map_string_bool:
+    additionalProperties:
+      type: boolean
+    type: object
   services.AgentConnection:
     properties:
       agent_enabled:
@@ -886,6 +920,85 @@ definitions:
       overall:
         $ref: '#/definitions/connections.ConnectionStatusCounts'
       pending_sessions:
+        type: integer
+    type: object
+  services.ImportResult:
+    properties:
+      agent_id:
+        type: string
+      name:
+        type: string
+      warnings:
+        items:
+          type: string
+        type: array
+    type: object
+  services.ShareConfigAgent:
+    properties:
+      description:
+        type: string
+      instructions:
+        type: string
+      name:
+        type: string
+      user_preferences:
+        additionalProperties: true
+        type: object
+    type: object
+  services.ShareConfigConnection:
+    properties:
+      display_name:
+        type: string
+      enabled:
+        type: boolean
+      enabled_toolkits:
+        items:
+          type: string
+        type: array
+      enabled_tools:
+        items:
+          type: string
+        type: array
+      slug:
+        type: string
+      template_id:
+        type: string
+      transport:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+    type: object
+  services.ShareConfigMetadata:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+    type: object
+  services.SharePreview:
+    properties:
+      agent:
+        $ref: '#/definitions/services.ShareConfigAgent'
+      connections:
+        items:
+          $ref: '#/definitions/services.ShareConfigConnection'
+        type: array
+      metadata:
+        $ref: '#/definitions/services.ShareConfigMetadata'
+    type: object
+  services.ShareResponse:
+    properties:
+      expires_at:
+        type: string
+      import_count:
+        type: integer
+      share_code:
+        type: string
+      url:
+        type: string
+      view_count:
         type: integer
     type: object
   services.TeamConnection:
@@ -2548,6 +2661,83 @@ paths:
       summary: Update a schedule
       tags:
       - schedules
+  /agents/{agent_id}/share:
+    delete:
+      consumes:
+      - application/json
+      description: Revoke all active shares for an agent
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-map_string_bool'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Revoke agent shares
+      tags:
+      - agents
+    post:
+      consumes:
+      - application/json
+      description: Create a shareable link for an agent
+      parameters:
+      - description: Agent ID
+        in: path
+        name: agent_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_ShareResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create agent share link
+      tags:
+      - agents
   /agents/{agent_id}/webhook-tokens:
     get:
       consumes:
@@ -2655,6 +2845,50 @@ paths:
       summary: Delete webhook token
       tags:
       - webhooks
+  /agents/import:
+    post:
+      consumes:
+      - application/json
+      description: Import a shared agent into the user's workspace
+      parameters:
+      - description: Import request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ImportAgentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_ImportResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Import shared agent
+      tags:
+      - agents
   /agents/runs:
     get:
       consumes:
@@ -3238,6 +3472,43 @@ paths:
       summary: Get connections status summary
       tags:
       - connections
+  /public/shares/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get the public preview for a share code (no authentication required)
+      parameters:
+      - description: Share code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SingleResponse-services_SharePreview'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "410":
+          description: Gone
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get public share preview
+      tags:
+      - public
   /users/me:
     get:
       consumes:
