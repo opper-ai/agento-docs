@@ -3982,6 +3982,9 @@
             "properties": {
                 "message": {
                     "type": "string"
+                },
+                "user_timezone": {
+                    "type": "string"
                 }
             }
         },

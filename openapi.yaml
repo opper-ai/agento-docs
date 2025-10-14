@@ -184,6 +184,8 @@ definitions:
     properties:
       message:
         type: string
+      user_timezone:
+        type: string
     required:
     - message
     type: object
